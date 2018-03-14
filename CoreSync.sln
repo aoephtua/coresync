@@ -1,0 +1,83 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.2036
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{58CB7E0C-C1B0-4671-8EA9-A2ECA984415B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CoreSync", "CoreSync", "{C587E4F5-C512-45F6-B18B-39E50353855E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreSync", "src\CoreSync\CoreSync\CoreSync.csproj", "{289E61EF-08C1-4AB9-A421-36B66237A06F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreSync.Core", "src\CoreSync\CoreSync.Core\CoreSync.Core.csproj", "{001C2913-EBA7-4814-ACD1-F5B307F8C545}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreSync.CryptLib", "src\CoreSync\CoreSync.CryptLib\CoreSync.CryptLib.csproj", "{74B0F8A6-E6CE-4181-8079-146DFEC97E85}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreSync.CommandLineUtils", "src\CoreSync\CoreSync.CommandLineUtils\CoreSync.CommandLineUtils.csproj", "{BE6478A2-170B-4FEC-8016-A8CD05E2D864}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{F3062E8D-0B66-49DD-BFCD-C56E63C5044F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CoreSync.UnitTests", "CoreSync.UnitTests", "{74D93567-9F28-4E04-A532-F87C1A8A1D8C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreSync.CryptLib.UnitTests", "test\CoreSync.UnitTests\CoreSync.CryptLib.UnitTests\CoreSync.CryptLib.UnitTests.csproj", "{EF25D1E4-300B-43D0-8BFE-55D86CD9004B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "files", "files", "{D6DB4A58-BD3C-4977-925C-A02D18DE813C}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		LICENSE = LICENSE
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "resources", "resources", "{0A9CB10D-38A4-447E-B7FC-770FBAC6E271}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "img", "img", "{40D77E78-4EF2-48FF-B3A7-53395D981D7D}"
+	ProjectSection(SolutionItems) = preProject
+		resources\img\architecture.png = resources\img\architecture.png
+		resources\img\logo.png = resources\img\logo.png
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{289E61EF-08C1-4AB9-A421-36B66237A06F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{289E61EF-08C1-4AB9-A421-36B66237A06F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{289E61EF-08C1-4AB9-A421-36B66237A06F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{289E61EF-08C1-4AB9-A421-36B66237A06F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{001C2913-EBA7-4814-ACD1-F5B307F8C545}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{001C2913-EBA7-4814-ACD1-F5B307F8C545}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{001C2913-EBA7-4814-ACD1-F5B307F8C545}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{001C2913-EBA7-4814-ACD1-F5B307F8C545}.Release|Any CPU.Build.0 = Release|Any CPU
+		{74B0F8A6-E6CE-4181-8079-146DFEC97E85}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{74B0F8A6-E6CE-4181-8079-146DFEC97E85}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{74B0F8A6-E6CE-4181-8079-146DFEC97E85}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{74B0F8A6-E6CE-4181-8079-146DFEC97E85}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BE6478A2-170B-4FEC-8016-A8CD05E2D864}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE6478A2-170B-4FEC-8016-A8CD05E2D864}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE6478A2-170B-4FEC-8016-A8CD05E2D864}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BE6478A2-170B-4FEC-8016-A8CD05E2D864}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EF25D1E4-300B-43D0-8BFE-55D86CD9004B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EF25D1E4-300B-43D0-8BFE-55D86CD9004B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EF25D1E4-300B-43D0-8BFE-55D86CD9004B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EF25D1E4-300B-43D0-8BFE-55D86CD9004B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{C587E4F5-C512-45F6-B18B-39E50353855E} = {58CB7E0C-C1B0-4671-8EA9-A2ECA984415B}
+		{289E61EF-08C1-4AB9-A421-36B66237A06F} = {C587E4F5-C512-45F6-B18B-39E50353855E}
+		{001C2913-EBA7-4814-ACD1-F5B307F8C545} = {C587E4F5-C512-45F6-B18B-39E50353855E}
+		{74B0F8A6-E6CE-4181-8079-146DFEC97E85} = {C587E4F5-C512-45F6-B18B-39E50353855E}
+		{BE6478A2-170B-4FEC-8016-A8CD05E2D864} = {C587E4F5-C512-45F6-B18B-39E50353855E}
+		{74D93567-9F28-4E04-A532-F87C1A8A1D8C} = {F3062E8D-0B66-49DD-BFCD-C56E63C5044F}
+		{EF25D1E4-300B-43D0-8BFE-55D86CD9004B} = {74D93567-9F28-4E04-A532-F87C1A8A1D8C}
+		{0A9CB10D-38A4-447E-B7FC-770FBAC6E271} = {D6DB4A58-BD3C-4977-925C-A02D18DE813C}
+		{40D77E78-4EF2-48FF-B3A7-53395D981D7D} = {0A9CB10D-38A4-447E-B7FC-770FBAC6E271}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F34763B5-81A8-464F-A7A0-527CF6115A2C}
+	EndGlobalSection
+EndGlobal

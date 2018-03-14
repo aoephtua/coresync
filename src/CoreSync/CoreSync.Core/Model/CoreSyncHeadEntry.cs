@@ -1,0 +1,542 @@
+﻿// Copyright (c) Thorsten A. Weintz. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+
+#region Using Directives
+
+using CoreSync.Core.IO;
+using CoreSync.CryptLib;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Runtime.Serialization;
+
+#endregion
+
+namespace CoreSync.Core.Model
+{
+    [DataContract]
+    public class CoreSyncHeadEntry : CoreSyncVaultEntryBase<CoreSyncHeadEntry>
+    {
+        #region Public Members
+
+        /// <summary>
+        /// Contains <see cref="string"/> value with directory name of <see cref="CoreSyncHeadEntry"/>.
+        /// </summary>
+        public const string DirectoryName = "h";
+
+        #endregion
+
+        #region Protected Properties
+
+        /// <summary>
+        /// Gets <see cref="string"/> value with relative file name of <see cref="CoreSyncHeadEntry"/>.
+        /// </summary>
+        protected override string RelativeFileName => Path.Combine(CoreSyncHeadEntry.DirectoryName, this.ProcessEncryptedHeadFilename());
+
+        #endregion
+
+        #region Public Properties
+
+        /// <summary>
+        /// Contains <see cref="string"/> value with relative name of <see cref="CoreSyncHeadEntry"/>.
+        /// </summary>
+        [DataMember(Name = "Name", Order = 0)]
+        private string relativeName;
+
+        /// <summary>
+        /// Gets or sets <see cref="string"/> value with relative name of <see cref="CoreSyncHeadEntry"/>.
+        /// </summary>
+        public string RelativeName
+        {
+            get
+            {
+                return this.relativeName;
+            }
+            set
+            {
+                if (this.relativeName != value)
+                {
+                    this.relativeName = value;
+
+                    if (this.IsFile = File.Exists(this.FullName))
+                    {
+                        this.FileEntry = CoreSyncFileEntry.GetSourceFileEntry(this.FullName);
+
+                        if (this.FileEntry != null)
+                        {
+                            this.FileEntryIdentifier = this.FileEntry.Identifier;
+                        }
+                    }
+
+                    this.FileName = this.ProcessEncryptedHeadFilename();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets <see cref="string"/> value with full name of <see cref="CoreSyncHeadEntry"/>.
+        /// </summary>
+        public string FullName
+        {
+            get
+            {
+                return Path.Combine(CoreSyncProcessor.WorkingDirectoryPath, this.relativeName);
+            }
+        }
+
+        /// <summary>
+        /// Contains <see cref="string"/> value with head file name of <see cref="CoreSyncHeadEntry"/>.
+        /// </summary>
+        [DataMember(Name = "FileName", Order = 1)]
+        private string fileName;
+
+        /// <summary>
+        /// Gets or sets <see cref="string"/> value with head file name of <see cref="CoreSyncHeadEntry"/>.
+        /// </summary>
+        public string FileName
+        {
+            get
+            {
+                return this.fileName;
+            }
+            set
+            {
+                this.fileName = value;
+            }
+        }
+
+        /// <summary>
+        /// Contains <see cref="Guid"/> value with <see cref="CoreSyncFileEntry"/> identifier of <see cref="CoreSyncHeadEntry"/>.
+        /// </summary>
+        [DataMember(Name = "FileID", Order = 2, EmitDefaultValue = false)]
+        private Guid fileEntryIdentifier;
+
+        /// <summary>
+        /// Gets or sets <see cref="Guid"/> value with <see cref="CoreSyncFileEntry"/> identifier of <see cref="CoreSyncHeadEntry"/>.
+        /// </summary>
+        public Guid FileEntryIdentifier
+        {
+            get
+            {
+                return this.fileEntryIdentifier;
+            }
+            set
+            {
+                this.fileEntryIdentifier = value;
+            }
+        }
+
+        /// <summary>
+        /// Contains <see cref="CoreSyncFileEntry"/> instance of <see cref="CoreSyncHeadEntry"/>.
+        /// </summary>
+        private CoreSyncFileEntry fileEntry;
+
+        /// <summary>
+        /// Gets or sets <see cref="CoreSyncFileEntry"/> instance of <see cref="CoreSyncHeadEntry"/>.
+        /// </summary>
+        public CoreSyncFileEntry FileEntry
+        {
+            get
+            {
+                if (this.fileEntry == null && this.IsFile)
+                {
+                    this.fileEntry = CoreSyncRepository.SingletonInstance.FileEntries.FirstOrDefault(x => x.Identifier == this.FileEntryIdentifier);
+                }
+
+                return this.fileEntry;
+            }
+            set
+            {
+                this.fileEntry = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets whether instance of <see cref="CoreSyncHeadEntry"/> is related to <see cref="File"/>.
+        /// </summary>
+        public bool IsFile { get; private set; }
+
+        /// <summary>
+        /// Gets whether instance of <see cref="CoreSyncHeadEntry"/> is valid.
+        /// </summary>
+        public bool IsValid
+        {
+            get
+            {
+                return (this.IsFile && this.FileEntry != null) || (!this.IsFile && !Directory.EnumerateFileSystemEntries(this.FullName).Any());
+            }
+        }
+
+        #endregion
+
+        #region Public Functions
+
+        /// <summary>
+        /// Gets and adds source instance of <see cref="CoreSyncHeadEntry"/> to <see cref="CoreSyncRepository"/>.
+        /// </summary>
+        /// <param name="fileSystemEntryName">
+        /// Contains <see cref="string"/> value with full name of file system entry.
+        /// </param>
+        /// <returns>
+        /// Returns instance of <see cref="CoreSyncHeadEntry"/>.
+        /// </returns>
+        public static CoreSyncHeadEntry GetSourceHeadEntry(string fileSystemEntryName)
+        {
+            var sourceHeadEntry = new CoreSyncHeadEntry()
+            {
+                RelativeName = fileSystemEntryName.Substring(CoreSyncProcessor.WorkingDirectoryPath.Length + 1)
+            };
+
+            if (CoreSyncRepository.SingletonInstance.HeadEntries.FirstOrDefault(x => x.FileName == sourceHeadEntry.FileName) is CoreSyncHeadEntry existingEntry)
+            {
+                return existingEntry;
+            }
+            else
+            {
+                if (sourceHeadEntry.IsValid)
+                {
+                    CoreSyncRepository.SingletonInstance.HeadEntries.Add(sourceHeadEntry);
+
+                    return sourceHeadEntry;
+                }
+                else if (sourceHeadEntry.IsFile)
+                {
+                    CoreSyncProcessor.Log(String.Format("{0} Invalid entry \"{1}\"", DateTime.Now.ToString(), fileSystemEntryName));
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Gets decrypted instance of <see cref="CoreSyncHeadEntry"/>.
+        /// </summary>
+        /// <param name="fileName">
+        /// Contains <see cref="string"/> value with file name of <see cref="CoreSyncHeadEntry"/>.
+        /// </param>
+        /// <returns>
+        /// Returns instance of <see cref="CoreSyncHeadEntry"/>.
+        /// </returns>
+        public static CoreSyncHeadEntry GetDecryptedHeadEntry(string fileName)
+        {
+            var decryptedHeadEntry = CoreSyncHeadEntry.DecryptInstance(fileName);
+
+            if (decryptedHeadEntry != null && decryptedHeadEntry.IsFile)
+            {
+                decryptedHeadEntry.FileEntry = CoreSyncFileEntry.DecryptInstance(decryptedHeadEntry.FileEntryIdentifier);
+            }
+
+            return decryptedHeadEntry;
+        }
+
+        /// <summary>
+        /// Deletes source instances of <see cref="CoreSyncHeadEntry"/>.
+        /// </summary>
+        /// <param name="encryptedHeadEntries">
+        /// Contains instance of <see cref="List{Tuple{string, string}}"/> with encrypted head entries.
+        /// </param>
+        public static void DeleteSourceHeadEntries(List<Tuple<string, string>> encryptedHeadEntries)
+        {
+            CoreSyncProcessor.Log("Initializing deletion of file system entries", writeLogEntry: false);
+
+            var headEntriesForDeletion = CoreSyncRepository.SingletonInstance.HeadEntries.Where(x => !encryptedHeadEntries.Any(x2 => x2.Item2 == x.FileName)).ToList();
+
+            if (headEntriesForDeletion.Any())
+            {
+                foreach (var headEntryForDeletion in headEntriesForDeletion)
+                {
+                    if (headEntryForDeletion.DeleteSourceInstance())
+                    {
+                        CoreSyncProcessor.Log(String.Format("Deleted entry \"{0}\"", headEntryForDeletion.FullName));
+                    }
+                }
+            }
+            else
+            {
+                CoreSyncProcessor.Log("No source entries for deletion found", writeLogEntry: false);
+            }
+        }
+
+        /// <summary>
+        /// Decrypts instances of <see cref="CoreSyncHeadEntry"/>.
+        /// </summary>
+        /// <param name="encryptedHeadEntries">
+        /// Contains instance of <see cref="List{Tuple{string, string}}"/> with encrypted head entries.
+        /// </param>
+        public static void DecryptHeadEntries(List<Tuple<string, string>> encryptedHeadEntries)
+        {
+            CoreSyncProcessor.Log("Initializing vault entries decryption", writeLogEntry: false);
+
+            var encryptedHeadEntriesNames = encryptedHeadEntries.Where(x => !CoreSyncRepository.SingletonInstance.HeadEntries.Any(x2 => x2.FileName == x.Item2));
+
+            if (encryptedHeadEntriesNames.Any())
+            {
+                foreach (var encryptedHeadEntryName in encryptedHeadEntriesNames)
+                {
+                    var fileName = Path.Combine(encryptedHeadEntryName.Item1, encryptedHeadEntryName.Item2);
+
+                    if (CoreSyncHeadEntry.GetDecryptedHeadEntry(fileName) is CoreSyncHeadEntry headEntry)
+                    {
+                        if (headEntry.IsFile)
+                        {
+                            if (headEntry.IsValid)
+                            {
+                                DataProcessor.Decrypt(headEntry.FullName, CoreSyncConfiguration.SingletonInstance.GetEncryptedDirectory(CoreSyncFileEntry.DataDirectoryName, CoreSyncRepository.SplitFilenameForParentDirectory(headEntry.FileEntry.FileDataChecksum)), headEntry.FileEntry.FileDataPassphrase);
+
+                                if (!CoreSyncRepository.SingletonInstance.FileEntries.Any(x => x.FileDataChecksum == headEntry.FileEntry.FileDataChecksum))
+                                {
+                                    CoreSyncRepository.SingletonInstance.FileEntries.Add(headEntry.FileEntry);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            Directory.CreateDirectory(headEntry.FullName);
+                        }
+
+                        CoreSyncRepository.SingletonInstance.HeadEntries.Add(headEntry);
+
+                        CoreSyncProcessor.Log(String.Format("Decrypted entry \"{0}\"", headEntry.FullName));
+                    }
+                }
+            }
+            else
+            {
+                CoreSyncProcessor.Log("No vault entries for decryption found", writeLogEntry: false);
+            }
+        }
+
+        /// <summary>
+        /// Encrypts instances of <see cref="CoreSyncHeadEntry"/>.
+        /// </summary>
+        /// <param name="encryptedHeadEntries">
+        /// Contains instance of <see cref="List{Tuple{string, string}}"/> with encrypted head entries.
+        /// </param>
+        /// <param name="fileSystemEntryNames">
+        /// Contains <see cref="List{string}"/> with entries of file system.
+        /// </param>
+        public static void EncryptHeadEntries(List<Tuple<string, string>> encryptedHeadEntries, List<string> fileSystemEntryNames)
+        {
+            if (fileSystemEntryNames.Any())
+            {
+                CoreSyncProcessor.Log("Initializing file system entries encryption", writeLogEntry: false);
+
+                var decryptedFileEntries = DataProcessor.GetEntries(CoreSyncConfiguration.SingletonInstance.GetEncryptedDirectory(CoreSyncFileEntry.DirectoryName), true);
+
+                var cnt = 0;
+
+                foreach (var fileSystemEntryName in fileSystemEntryNames)
+                {
+                    if (CoreSyncHeadEntry.GetSourceHeadEntry(fileSystemEntryName) is CoreSyncHeadEntry headEntry)
+                    {
+                        if (encryptedHeadEntries.FirstOrDefault(x => x.Item2 == headEntry.FileName) == null)
+                        {
+                            if (CoreSyncRepository.SingletonInstance.HeadEntries.FirstOrDefault(x => x.RelativeName == headEntry.RelativeName && x.FileName != headEntry.FileName) is CoreSyncHeadEntry obsoleteEntry)
+                            {
+                                obsoleteEntry.DeleteInstance();
+                            }
+
+                            if (headEntry.IsFile && decryptedFileEntries.FirstOrDefault(x => x.Item2 == headEntry.FileEntry.IdentifierAsFileName) == null)
+                            {
+                                DataProcessor.Encrypt(headEntry.FullName, CoreSyncConfiguration.SingletonInstance.GetEncryptedDirectory(CoreSyncFileEntry.DataDirectoryName, CoreSyncRepository.SplitFilenameForParentDirectory(headEntry.FileEntry.FileDataChecksum)), headEntry.FileEntry.FileDataPassphrase);
+
+                                headEntry.FileEntry.EncryptInstance();
+                            }
+
+                            if (headEntry.EncryptInstance())
+                            {
+                                cnt++;
+
+                                CoreSyncProcessor.Log(String.Format("Encrypted entry \"{0}\"", headEntry.FullName));
+                            }
+                        }
+                    }
+                }
+
+                if (cnt == 0)
+                {
+                    CoreSyncProcessor.Log("No file system entries for encryption found", writeLogEntry: false);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Deletes encrypted instances of <see cref="CoreSyncHeadEntry"/>.
+        /// </summary>
+        /// <param name="fileSystemEntryNames">
+        /// Contains <see cref="List{string}"/> with entries of file system.
+        /// </param>
+        public static void DeleteEncryptedHeadEntries(List<string> fileSystemEntryNames)
+        {
+            CoreSyncProcessor.Log("Initializing deletion of vault entries", writeLogEntry: false);
+
+            var removedHeadEntries = CoreSyncRepository.SingletonInstance.HeadEntries
+                .Where(x => !fileSystemEntryNames.Any(x2 => x2 == x.FullName))
+                .ToList();
+
+            var needlessHeadEntries = CoreSyncRepository.SingletonInstance.HeadEntries
+                .Where(x => !x.IsFile && CoreSyncRepository.SingletonInstance.HeadEntries
+                    .Where(x2 => !removedHeadEntries.Any(x3 => x3.FullName == x2.FullName))
+                    .Any(x2 => x.FullName != x2.FullName && x2.FullName.StartsWith(x.FullName + Path.DirectorySeparatorChar)))
+                .ToList();
+
+            var headEntriesForDeletion = removedHeadEntries.Concat(needlessHeadEntries);
+
+            foreach (var sourceDeletedHeadEntry in headEntriesForDeletion)
+            {
+                sourceDeletedHeadEntry.DeleteInstance();
+            }
+
+            foreach (var sourceDeletedFileEntry in CoreSyncRepository.SingletonInstance.FileEntries.Where(x => !CoreSyncRepository.SingletonInstance.HeadEntries.Any(x2 => x2.FileEntryIdentifier == x.Identifier)).ToList())
+            {
+                if (sourceDeletedFileEntry.DeleteInstance(true))
+                {
+                    DataProcessor.Delete(CoreSyncConfiguration.SingletonInstance.GetEncryptedDirectory(CoreSyncFileEntry.DataDirectoryName, CoreSyncRepository.SplitFilenameForParentDirectory(sourceDeletedFileEntry.FileDataChecksum)), true);
+
+                    if (CoreSyncRepository.SingletonInstance.FileEntries.Remove(sourceDeletedFileEntry))
+                    {
+                        CoreSyncRepository.SingletonInstance.SaveToFileSystem();
+
+                        CoreSyncProcessor.Log(String.Format("Deleted file with checksum {0}", sourceDeletedFileEntry.FileDataChecksum));
+                    }
+                }
+            }
+
+            if (!headEntriesForDeletion.Any())
+            {
+                CoreSyncProcessor.Log("No vault entries for deletion found", writeLogEntry: false);
+            }
+        }
+
+        /// <summary>
+        /// Decrypts instance of <see cref="CoreSyncHeadEntry"/>.
+        /// </summary>
+        /// <param name="fileName">
+        /// Contains <see cref="string"/> value with file name.
+        /// </param>
+        /// <returns>
+        /// Returns instance of <see cref="CoreSyncHeadEntry"/>.
+        /// </returns>
+        public static CoreSyncHeadEntry DecryptInstance(string fileName)
+        {
+            return DecryptInstance(fileName, CoreSyncMasterVault.SingletonInstance.HeadEntryPassphrase);
+        }
+
+        /// <summary>
+        /// Deletes source instance of <see cref="CoreSyncHeadEntry"/>.
+        /// </summary>
+        /// <returns>
+        /// Returns whether deletion process succeeded.
+        /// </returns>
+        public bool DeleteInstance()
+        {
+            if (base.DeleteInstance(true))
+            {
+                if (CoreSyncRepository.SingletonInstance.HeadEntries.Remove(this))
+                {
+                    CoreSyncProcessor.Log(String.Format("Deleted entry \"{0}\"", this.FullName));
+                }
+
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Encrypts instance of <see cref="CoreSyncHeadEntry"/>.
+        /// </summary>
+        /// <returns>
+        /// Returns whether encryption process succeeded.
+        /// </returns>
+        public bool EncryptInstance()
+        {
+            CoreSyncMasterVault.SingletonInstance.EncryptInstance();
+
+            return base.EncryptInstance(CoreSyncMasterVault.SingletonInstance.HeadEntryPassphrase);
+        }
+
+        /// <summary>
+        /// Deletes decrypted references of <see cref="CoreSyncHeadEntry"/> instance.
+        /// </summary>
+        /// <returns>
+        /// Returns whether deletion process succeeded.
+        /// </returns>
+        public bool DeleteSourceInstance()
+        {
+            try
+            {
+                if (this.IsFile)
+                {
+                    File.Delete(this.FullName);
+
+                    if (!CoreSyncRepository.SingletonInstance.HeadEntries.Any(x => x.TargetFileName != this.TargetFileName && x.FileEntryIdentifier == this.FileEntryIdentifier))
+                    {
+                        CoreSyncRepository.SingletonInstance.FileEntries.Remove(this.FileEntry);
+                    }
+                }
+                else
+                {
+                    Directory.Delete(this.FullName);
+                }
+
+                CoreSyncRepository.SingletonInstance.HeadEntries.Remove(this);
+
+                if (!this.IsFile)
+                {
+                    foreach (var headSubEntry in CoreSyncRepository.SingletonInstance.HeadEntries.Where(x => x.RelativeName.StartsWith(this.RelativeName)).ToList())
+                    {
+                        headSubEntry.DeleteSourceInstance();
+                    }
+                }
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                CoreSyncProcessor.Log(e);
+            }
+
+            return false;
+        }
+
+        #endregion
+
+        #region Private Functions
+
+        /// <summary>
+        /// Method is called on deserialization of <see cref="CoreSyncHeadEntry"/> instance.
+        /// </summary>
+        /// <param name="context">
+        /// Contains instance of <see cref="StreamingContext"/>.
+        /// </param>
+        [OnDeserialized]
+        private void OnDeserialized(StreamingContext context)
+        {
+            this.IsFile = this.FileEntryIdentifier != Guid.Empty;
+        }
+
+        /// <summary>
+        /// Processes <see cref="string"/> value with filename for encrypted instance of <see cref="CoreSyncHeadEntry"/>.
+        /// </summary>
+        /// <returns>
+        /// Returns <see cref="string"/> value with filename.
+        /// </returns>
+        private string ProcessEncryptedHeadFilename()
+        {
+            if (String.IsNullOrEmpty(this.FileName))
+            {
+                var value = this.relativeName + this.FileEntry?.FileDataChecksum;
+
+                var hexString = HashVault.GetHexStringFromBytes(HashVault.Compute(value, CoreSyncMasterVault.SingletonInstance.HeadEntrySalt));
+
+                return CoreSyncRepository.SplitFilenameForParentDirectory(hexString.ToUpperInvariant());
+            }
+
+            return this.FileName;
+        }
+
+        #endregion
+    }
+}
