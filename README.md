@@ -61,7 +61,7 @@ Commands:
 Use "coresync [command] --help" for more information about a command.
 ```
 
-## Architecure
+## Architecture
 
 <p align="center"><img src="resources/img/architecture.png" alt="coresync architecture"></p>
 
