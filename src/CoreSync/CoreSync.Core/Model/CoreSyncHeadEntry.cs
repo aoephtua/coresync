@@ -202,7 +202,7 @@ namespace CoreSync.Core.Model
                 }
                 else if (sourceHeadEntry.IsFile)
                 {
-                    CoreSyncProcessor.Log(String.Format("{0} Invalid entry \"{1}\"", DateTime.Now.ToString(), fileSystemEntryName));
+                    CoreSyncProcessor.Log(String.Format("{0} Invalid entry \"{1}\".", DateTime.Now.ToString(), fileSystemEntryName));
                 }
             }
 
@@ -238,7 +238,7 @@ namespace CoreSync.Core.Model
         /// </param>
         public static void DeleteSourceHeadEntries(List<Tuple<string, string>> encryptedHeadEntries)
         {
-            CoreSyncProcessor.Log("Initializing deletion of file system entries", writeLogEntry: false);
+            CoreSyncProcessor.Log("Initializing deletion of file system entries.", writeLogEntry: false);
 
             var headEntriesForDeletion = CoreSyncRepository.SingletonInstance.HeadEntries.Where(x => !encryptedHeadEntries.Any(x2 => x2.Item2 == x.FileName)).ToList();
 
@@ -248,13 +248,13 @@ namespace CoreSync.Core.Model
                 {
                     if (headEntryForDeletion.DeleteSourceInstance())
                     {
-                        CoreSyncProcessor.Log(String.Format("Deleted entry \"{0}\"", headEntryForDeletion.FullName));
+                        CoreSyncProcessor.Log(String.Format("Deleted entry \"{0}\".", headEntryForDeletion.FullName));
                     }
                 }
             }
             else
             {
-                CoreSyncProcessor.Log("No source entries for deletion found", writeLogEntry: false);
+                CoreSyncProcessor.Log("No source entries for deletion found.", writeLogEntry: false);
             }
         }
 
@@ -266,7 +266,7 @@ namespace CoreSync.Core.Model
         /// </param>
         public static void DecryptHeadEntries(List<Tuple<string, string>> encryptedHeadEntries)
         {
-            CoreSyncProcessor.Log("Initializing vault entries decryption", writeLogEntry: false);
+            CoreSyncProcessor.Log("Initializing vault entries decryption.", writeLogEntry: false);
 
             var encryptedHeadEntriesNames = encryptedHeadEntries.Where(x => !CoreSyncRepository.SingletonInstance.HeadEntries.Any(x2 => x2.FileName == x.Item2));
 
@@ -297,13 +297,13 @@ namespace CoreSync.Core.Model
 
                         CoreSyncRepository.SingletonInstance.HeadEntries.Add(headEntry);
 
-                        CoreSyncProcessor.Log(String.Format("Decrypted entry \"{0}\"", headEntry.FullName));
+                        CoreSyncProcessor.Log(String.Format("Decrypted entry \"{0}\".", headEntry.FullName));
                     }
                 }
             }
             else
             {
-                CoreSyncProcessor.Log("No vault entries for decryption found", writeLogEntry: false);
+                CoreSyncProcessor.Log("No vault entries for decryption found.", writeLogEntry: false);
             }
         }
 
@@ -320,7 +320,7 @@ namespace CoreSync.Core.Model
         {
             if (fileSystemEntryNames.Any())
             {
-                CoreSyncProcessor.Log("Initializing file system entries encryption", writeLogEntry: false);
+                CoreSyncProcessor.Log("Initializing file system entries encryption.", writeLogEntry: false);
 
                 var decryptedFileEntries = DataProcessor.GetEntries(CoreSyncConfiguration.SingletonInstance.GetEncryptedDirectory(CoreSyncFileEntry.DirectoryName), true);
 
@@ -348,7 +348,7 @@ namespace CoreSync.Core.Model
                             {
                                 cnt++;
 
-                                CoreSyncProcessor.Log(String.Format("Encrypted entry \"{0}\"", headEntry.FullName));
+                                CoreSyncProcessor.Log(String.Format("Encrypted entry \"{0}\".", headEntry.FullName));
                             }
                         }
                     }
@@ -356,7 +356,7 @@ namespace CoreSync.Core.Model
 
                 if (cnt == 0)
                 {
-                    CoreSyncProcessor.Log("No file system entries for encryption found", writeLogEntry: false);
+                    CoreSyncProcessor.Log("No file system entries for encryption found.", writeLogEntry: false);
                 }
             }
         }
@@ -369,7 +369,7 @@ namespace CoreSync.Core.Model
         /// </param>
         public static void DeleteEncryptedHeadEntries(List<string> fileSystemEntryNames)
         {
-            CoreSyncProcessor.Log("Initializing deletion of vault entries", writeLogEntry: false);
+            CoreSyncProcessor.Log("Initializing deletion of vault entries.", writeLogEntry: false);
 
             var removedHeadEntries = CoreSyncRepository.SingletonInstance.HeadEntries
                 .Where(x => !fileSystemEntryNames.Any(x2 => x2 == x.FullName))
@@ -398,14 +398,14 @@ namespace CoreSync.Core.Model
                     {
                         CoreSyncRepository.SingletonInstance.SaveToFileSystem();
 
-                        CoreSyncProcessor.Log(String.Format("Deleted file with checksum {0}", sourceDeletedFileEntry.FileDataChecksum));
+                        CoreSyncProcessor.Log(String.Format("Deleted file with checksum {0}.", sourceDeletedFileEntry.FileDataChecksum));
                     }
                 }
             }
 
             if (!headEntriesForDeletion.Any())
             {
-                CoreSyncProcessor.Log("No vault entries for deletion found", writeLogEntry: false);
+                CoreSyncProcessor.Log("No vault entries for deletion found.", writeLogEntry: false);
             }
         }
 
@@ -435,7 +435,7 @@ namespace CoreSync.Core.Model
             {
                 if (CoreSyncRepository.SingletonInstance.HeadEntries.Remove(this))
                 {
-                    CoreSyncProcessor.Log(String.Format("Deleted entry \"{0}\"", this.FullName));
+                    CoreSyncProcessor.Log(String.Format("Deleted entry \"{0}\".", this.FullName));
                 }
 
                 return true;

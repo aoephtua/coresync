@@ -189,7 +189,7 @@ namespace CoreSync.Core.Model
             }
             else
             {
-                CoreSyncProcessor.Log("Invalid configuration file", CoreSyncLogLevel.Error);
+                CoreSyncProcessor.Log("Invalid configuration file.", CoreSyncLogLevel.Error);
             }
         }
 

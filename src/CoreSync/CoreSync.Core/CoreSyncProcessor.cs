@@ -78,8 +78,7 @@ namespace CoreSync.Core
                 {
                     LogLevel = logLevel,
                     Date = DateTime.Now,
-                    Data = data,
-                    DataOnly = !writeLogEntry
+                    Data = data
                 };
 
                 if (writeLogEntry)
