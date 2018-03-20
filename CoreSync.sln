@@ -24,6 +24,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "files", "files", "{D6DB4A58-BD3C-4977-925C-A02D18DE813C}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
+		build.ps1 = build.ps1
 		LICENSE = LICENSE
 		README.md = README.md
 	EndProjectSection

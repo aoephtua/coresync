@@ -5,19 +5,23 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <DebugType>None</DebugType>
+    <DebugSymbols>false</DebugSymbols>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\CoreSync.CommandLineUtils\CoreSync.CommandLineUtils.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="Cmd\Linux" Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))'">
+    <None Include="Cmd\Unix" Condition="'$(RuntimeIdentifier)'=='linux-x64' Or '$(RuntimeIdentifier)'=='osx-x64'">
       <Link>coresync</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Cmd\Win" Condition="'$(OS)'=='Windows_NT'">
+    <None Include="Cmd\Win" Condition="'$(RuntimeIdentifier)'=='win-x64' Or '$(RuntimeIdentifier)'=='win-x86'">
       <Link>coresync.cmd</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-
 </Project>
