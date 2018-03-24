@@ -124,7 +124,7 @@ namespace CoreSync.Core.IO
             {
                 try
                 {
-                    using (var fileStream = new FileStream(sourceFileName, FileMode.Open))
+                    using (var fileStream = new FileStream(sourceFileName, FileMode.Open, FileAccess.Read))
                     {
                         return DataProcessor.Encrypt(fileStream, fileName, passphrase);
                     }
