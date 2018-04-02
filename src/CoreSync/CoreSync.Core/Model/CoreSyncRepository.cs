@@ -168,6 +168,8 @@ namespace CoreSync.Core.Model
             {
                 var sourceHeadEntriesBeforeSync = this.headEntries.Any();
 
+                CoreSyncProcessor.Log("Fetching head entries.", writeLogEntry: false);
+
                 var encryptedHeadEntries = DataProcessor.GetEntries(CoreSyncConfiguration.SingletonInstance.GetEncryptedDirectory(CoreSyncHeadEntry.DirectoryName), true);
 
                 if (encryptedHeadEntries.Any())
@@ -175,6 +177,8 @@ namespace CoreSync.Core.Model
                     CoreSyncHeadEntry.DeleteSourceHeadEntries(encryptedHeadEntries);
                     CoreSyncHeadEntry.DecryptHeadEntries(encryptedHeadEntries);
                 }
+
+                CoreSyncProcessor.Log("Fetching source entries of file system.", writeLogEntry: false);
 
                 var fileSystemEntryNames = Directory.GetFileSystemEntries(CoreSyncProcessor.WorkingDirectoryPath, "*", SearchOption.AllDirectories)
                     .Where(x => !x.Contains(CoreSyncProcessor.BaseDirectoryName) && CoreSyncConfiguration.IsValidEntryName(x))
