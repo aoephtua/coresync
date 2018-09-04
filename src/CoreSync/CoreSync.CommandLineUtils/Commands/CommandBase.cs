@@ -53,11 +53,11 @@ namespace CoreSync.CommandLineUtils.Commands
         /// </returns>
         protected virtual int OnExecute(CommandLineApplication app)
         {
-            this.App = app;
+            App = app;
 
-            if (!String.IsNullOrEmpty(this.Directory))
+            if (!string.IsNullOrEmpty(Directory))
             {
-                CoreSyncProcessor.WorkingDirectoryPath = CoreSyncProcessor.GetDataDirectory(this.Directory);
+                CoreSyncProcessor.WorkingDirectoryPath = CoreSyncProcessor.GetDataDirectory(Directory);
             }
 
             if (CoreSyncProcessor.LogNotification == null)
@@ -70,9 +70,9 @@ namespace CoreSync.CommandLineUtils.Commands
 
             try
             {
-                if (this.Valid)
+                if (Valid)
                 {
-                    this.Execute();
+                    Execute();
                 }
             }
             catch (Exception e)

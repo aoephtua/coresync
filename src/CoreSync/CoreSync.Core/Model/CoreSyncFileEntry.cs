@@ -22,10 +22,7 @@ namespace CoreSync.Core.Model
         /// <summary>
         /// Initializes a new instance of <see cref="CoreSyncFileEntry"/>.
         /// </summary>
-        public CoreSyncFileEntry()
-        {
-            this.GenerateFileDataPassphrase();
-        }
+        public CoreSyncFileEntry() => GenerateFileDataPassphrase();
 
         #endregion
 
@@ -53,7 +50,7 @@ namespace CoreSync.Core.Model
         /// <summary>
         /// Contains <see cref="string"/> value with relative file name of <see cref="CoreSyncFileEntry"/>.
         /// </summary>
-        protected override string RelativeFileName => Path.Combine(CoreSyncFileEntry.DirectoryName, CoreSyncFileEntry.GetIdentifierAsFileName(this.identifier));
+        protected override string RelativeFileName => Path.Combine(DirectoryName, GetIdentifierAsFileName(identifier));
 
         #endregion
 
@@ -70,14 +67,8 @@ namespace CoreSync.Core.Model
         /// </summary>
         public Guid Identifier
         {
-            get
-            {
-                return this.identifier;
-            }
-            set
-            {
-                this.identifier = value;
-            }
+            get => identifier;
+            set => identifier = value;
         }
 
         /// <summary>
@@ -85,7 +76,7 @@ namespace CoreSync.Core.Model
         /// </summary>
         public string IdentifierAsFileName
         {
-            get => CoreSyncFileEntry.GetIdentifierAsFileName(this.identifier);
+            get => GetIdentifierAsFileName(identifier);
         }
 
         /// <summary>
@@ -99,14 +90,8 @@ namespace CoreSync.Core.Model
         /// </summary>
         public string FileDataChecksum
         {
-            get
-            {
-                return this.fileDataChecksum;
-            }
-            set
-            {
-                this.fileDataChecksum = value;
-            }
+            get => fileDataChecksum;
+            set => fileDataChecksum = value;
         }
 
         /// <summary>
@@ -120,14 +105,8 @@ namespace CoreSync.Core.Model
         /// </summary>
         public string FileDataPassphrase
         {
-            get
-            {
-                return this.fileDataPassphrase;
-            }
-            set
-            {
-                this.fileDataPassphrase = value;
-            }
+            get => fileDataPassphrase;
+            set => fileDataPassphrase = value;
         }
 
         #endregion
@@ -147,9 +126,9 @@ namespace CoreSync.Core.Model
         {
             CoreSyncFileEntry entry = null;
 
-            var checksum = CoreSyncFileEntry.CalculateFileDataChecksum(fileName);
+            var checksum = CalculateFileDataChecksum(fileName);
 
-            if (!String.IsNullOrEmpty(checksum))
+            if (!string.IsNullOrEmpty(checksum))
             {
                 entry = CoreSyncRepository.SingletonInstance.FileEntries.FirstOrDefault(x => x.FileDataChecksum == checksum);
 
@@ -175,7 +154,8 @@ namespace CoreSync.Core.Model
         /// </returns>
         public static CoreSyncFileEntry DecryptInstance(Guid identifier)
         {
-            return DecryptInstance(CoreSyncConfiguration.SingletonInstance.GetEncryptedDirectory(CoreSyncFileEntry.DirectoryName, CoreSyncFileEntry.GetIdentifierAsFileName(identifier)), CoreSyncMasterVault.SingletonInstance.FileEntryPassphrase);
+            return DecryptInstance(CoreSyncConfiguration.SingletonInstance.GetEncryptedDirectory(DirectoryName, GetIdentifierAsFileName(identifier)), 
+                CoreSyncMasterVault.SingletonInstance.FileEntryPassphrase);
         }
 
         /// <summary>
@@ -195,7 +175,7 @@ namespace CoreSync.Core.Model
             {
                 using (var fs = File.Open(filename, FileMode.Open, FileAccess.Read))
                 {
-                    checksum = HashVault.GetHexStringFromBytes(HashVault.Compute(fs, CoreSyncFileEntry.FileHashingAlgorithm)).ToUpperInvariant();
+                    checksum = HashVault.GetHexStringFromBytes(HashVault.Compute(fs, FileHashingAlgorithm)).ToUpperInvariant();
                 }
             }
             catch (Exception e)
@@ -238,10 +218,7 @@ namespace CoreSync.Core.Model
         /// <summary>
         /// Generates <see cref="string"/> value with file data passphrase of <see cref="CoreSyncFileEntry"/>.
         /// </summary>
-        private void GenerateFileDataPassphrase()
-        {
-            this.FileDataPassphrase = SymmetricCoreCryptor.GeneratePassphrase();
-        }
+        private void GenerateFileDataPassphrase() => FileDataPassphrase = SymmetricCoreCryptor.GeneratePassphrase();
 
         #endregion
     }

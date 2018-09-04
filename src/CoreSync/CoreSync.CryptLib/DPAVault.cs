@@ -32,7 +32,7 @@ namespace CoreSync.CryptLib
         /// </returns>
         public static byte[] Protect(string value, byte[] salt = null, DataProtectionScope scope = DataProtectionScope.CurrentUser)
         {
-            if (String.IsNullOrEmpty(value))
+            if (string.IsNullOrEmpty(value))
             {
                 return null;
             }

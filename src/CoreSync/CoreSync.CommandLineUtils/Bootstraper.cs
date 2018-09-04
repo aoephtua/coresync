@@ -56,7 +56,7 @@ namespace CoreSync.CommandLineUtils
         /// </returns>
         private int OnExecute()
         {
-            return CommandLineApplication.Execute<SyncCommand>(this.RemainingArguments?.ToArray());
+            return CommandLineApplication.Execute<SyncCommand>(RemainingArguments?.ToArray());
         }
 
         #endregion

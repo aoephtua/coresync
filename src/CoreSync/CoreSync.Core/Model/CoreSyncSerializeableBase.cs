@@ -55,9 +55,9 @@ namespace CoreSync.Core.Model
         /// </param>
         public virtual void SerializeToLocalFile(bool indent = false)
         {
-            if (!String.IsNullOrEmpty(this.TargetFileName))
+            if (!string.IsNullOrEmpty(TargetFileName))
             {
-                JsonSerializer.SingletonInstance.Serialize<T>((T)(object)this, CoreSyncProcessor.GetFullName(this.TargetFileName), indent);
+                JsonSerializer.SingletonInstance.Serialize<T>((T)(object)this, CoreSyncProcessor.GetFullName(TargetFileName), indent);
             }
         }
 
@@ -74,7 +74,7 @@ namespace CoreSync.Core.Model
         {
             try
             {
-                return DataProcessor.Delete(this.TargetFileName, withEmptyParentDirectories);
+                return DataProcessor.Delete(TargetFileName, withEmptyParentDirectories);
             }
             catch (Exception e)
             {
@@ -97,10 +97,7 @@ namespace CoreSync.Core.Model
         /// <returns>
         /// Returns instance of <typeparamref name="T"/>.
         /// </returns>
-        protected static T Deserialize(Stream stream)
-        {
-            return JsonSerializer.SingletonInstance.Deserialize<T>(stream);
-        }
+        protected static T Deserialize(Stream stream) => JsonSerializer.SingletonInstance.Deserialize<T>(stream);
 
         /// <summary>
         /// Deserializes to instance of <typeparamref name="T"/>.
@@ -111,10 +108,7 @@ namespace CoreSync.Core.Model
         /// <returns>
         /// Returns instance of <typeparamref name="T"/>.
         /// </returns>
-        protected static T DeserializeFromLocalFile(string fileName)
-        {
-            return JsonSerializer.SingletonInstance.Deserialize<T>(fileName);
-        }
+        protected static T DeserializeFromLocalFile(string fileName) => JsonSerializer.SingletonInstance.Deserialize<T>(fileName);
 
         #endregion
     }

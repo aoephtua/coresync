@@ -21,10 +21,10 @@ namespace CoreSync.Core.Model
         /// </summary>
         public CoreSyncMasterVault()
         {
-            this.headEntryPassphrase = SymmetricCoreCryptor.GeneratePassphrase();
-            this.fileEntryPassphrase = SymmetricCoreCryptor.GeneratePassphrase();
+            headEntryPassphrase = SymmetricCoreCryptor.GeneratePassphrase();
+            fileEntryPassphrase = SymmetricCoreCryptor.GeneratePassphrase();
 
-            this.headEntrySalt = SymmetricCoreCryptor.GetSalt();
+            headEntrySalt = SymmetricCoreCryptor.GetSalt();
         }
 
         #endregion
@@ -43,7 +43,7 @@ namespace CoreSync.Core.Model
         /// <summary>
         /// Gets <see cref="string"/> value with relative file name of <see cref="CoreSyncMasterVault"/>.
         /// </summary>
-        protected override string RelativeFileName => CoreSyncMasterVault.MasterVaultFileName;
+        protected override string RelativeFileName => MasterVaultFileName;
 
         #endregion
 
@@ -61,7 +61,9 @@ namespace CoreSync.Core.Model
         {
             get
             {
-                singletonInstance = singletonInstance ?? CoreSyncMasterVault.DecryptInstance(CoreSyncConfiguration.SingletonInstance.GetEncryptedDirectory(CoreSyncMasterVault.MasterVaultFileName), CoreSyncConfiguration.SingletonInstance.Passphrase) ?? new CoreSyncMasterVault();
+                var encryptedDirectory = CoreSyncConfiguration.SingletonInstance.GetEncryptedDirectory(MasterVaultFileName);
+
+                singletonInstance = singletonInstance ?? DecryptInstance(encryptedDirectory, CoreSyncConfiguration.SingletonInstance.Passphrase) ?? new CoreSyncMasterVault();
 
                 return singletonInstance;
             }
@@ -78,14 +80,8 @@ namespace CoreSync.Core.Model
         /// </summary>
         public string HeadEntryPassphrase
         {
-            get
-            {
-                return this.headEntryPassphrase;
-            }
-            set
-            {
-                this.headEntryPassphrase = value;
-            }
+            get => headEntryPassphrase;
+            set => headEntryPassphrase = value;
         }
 
         /// <summary>
@@ -99,14 +95,8 @@ namespace CoreSync.Core.Model
         /// </summary>
         public byte[] HeadEntrySalt
         {
-            get
-            {
-                return this.headEntrySalt;
-            }
-            set
-            {
-                this.headEntrySalt = value;
-            }
+            get => headEntrySalt;
+            set => headEntrySalt = value;
         }
 
         /// <summary>
@@ -120,14 +110,8 @@ namespace CoreSync.Core.Model
         /// </summary>
         public string FileEntryPassphrase
         {
-            get
-            {
-                return this.fileEntryPassphrase;
-            }
-            set
-            {
-                this.fileEntryPassphrase = value;
-            }
+            get => fileEntryPassphrase;
+            set => fileEntryPassphrase = value;
         }
 
         /// <summary>
@@ -137,7 +121,7 @@ namespace CoreSync.Core.Model
         {
             get
             {
-                return File.Exists(CoreSyncConfiguration.SingletonInstance.GetEncryptedDirectory(CoreSyncMasterVault.MasterVaultFileName));
+                return File.Exists(CoreSyncConfiguration.SingletonInstance.GetEncryptedDirectory(MasterVaultFileName));
             }
         }
 
@@ -154,10 +138,8 @@ namespace CoreSync.Core.Model
         /// <returns>
         /// Returns whether encryption process succeeded.
         /// </returns>
-        public bool EncryptInstance(bool force = false)
-        {
-            return force || !CoreSyncMasterVault.MasterVaultExists ? base.EncryptInstance(CoreSyncConfiguration.SingletonInstance.Passphrase) : false;
-        }
+        public bool EncryptInstance(bool force = false) =>
+            force || !MasterVaultExists ? base.EncryptInstance(CoreSyncConfiguration.SingletonInstance.Passphrase) : false;
 
         #endregion
     }

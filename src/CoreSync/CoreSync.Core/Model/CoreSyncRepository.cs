@@ -21,10 +21,7 @@ namespace CoreSync.Core.Model
         /// <summary>
         /// Initializes a new instance of <see cref="CoreSyncRepository"/>.
         /// </summary>
-        public CoreSyncRepository()
-        {
-            this.ConfigureHeadEntriesCollection();
-        }
+        public CoreSyncRepository() => ConfigureHeadEntriesCollection();
 
         #endregion
 
@@ -47,7 +44,7 @@ namespace CoreSync.Core.Model
         /// <summary>
         /// Contains <see cref="string"/> value with full name of <see cref="CoreSyncRepository"/>.
         /// </summary>
-        private static string FullName = CoreSyncProcessor.GetFullName(CoreSyncRepository.FileName);
+        private static string FullName = CoreSyncProcessor.GetFullName(FileName);
 
         #endregion
 
@@ -56,7 +53,7 @@ namespace CoreSync.Core.Model
         /// <summary>
         /// Gets <see cref="string"/> value with target file name of <see cref="CoreSyncRepository"/>.
         /// </summary>
-        protected override string TargetFileName => CoreSyncRepository.FullName;
+        protected override string TargetFileName => FullName;
 
         #endregion
 
@@ -75,7 +72,7 @@ namespace CoreSync.Core.Model
             get
             {
 #if DEBUG
-                singletonInstance = singletonInstance ?? CoreSyncRepository.Deserialize() ?? new CoreSyncRepository();
+                singletonInstance = singletonInstance ?? Deserialize() ?? new CoreSyncRepository();
 #else
                 singletonInstance = singletonInstance ?? CoreSyncRepository.DecryptInstance(CoreSyncRepository.FullName, CoreSyncConfiguration.SingletonInstance.Passphrase) ?? new CoreSyncRepository();
 #endif            
@@ -93,13 +90,7 @@ namespace CoreSync.Core.Model
         /// <summary>
         /// Gets instance of <see cref="ObservableCollection{CCloudHeadEntry}"/>.
         /// </summary>
-        public ObservableCollection<CoreSyncHeadEntry> HeadEntries
-        {
-            get
-            {
-                return this.headEntries;
-            }
-        }
+        public ObservableCollection<CoreSyncHeadEntry> HeadEntries => headEntries;
 
         /// <summary>
         /// Contains instance of <see cref="ObservableCollection{CCloudFileEntry}"/>.
@@ -110,13 +101,7 @@ namespace CoreSync.Core.Model
         /// <summary>
         /// Gets instance of <see cref="ObservableCollection{CCloudFileEntry}"/>.
         /// </summary>
-        public ObservableCollection<CoreSyncFileEntry> FileEntries
-        {
-            get
-            {
-                return this.fileEntries;
-            }
-        }
+        public ObservableCollection<CoreSyncFileEntry> FileEntries => fileEntries;
 
         #endregion
 
@@ -133,9 +118,9 @@ namespace CoreSync.Core.Model
         /// </returns>
         public static string SplitFilenameForParentDirectory(string fileName)
         {
-            if (fileName.Length > CoreSyncRepository.ParentDirectoryOfSplittedFileNameLength)
+            if (fileName.Length > ParentDirectoryOfSplittedFileNameLength)
             {
-                return fileName.Insert(CoreSyncRepository.ParentDirectoryOfSplittedFileNameLength, Path.DirectorySeparatorChar.ToString());
+                return fileName.Insert(ParentDirectoryOfSplittedFileNameLength, Path.DirectorySeparatorChar.ToString());
             }
 
             return fileName;
@@ -146,7 +131,7 @@ namespace CoreSync.Core.Model
         /// </summary>
         public void SaveToFileSystem()
         {
-            if (this.headEntries.Any())
+            if (headEntries.Any())
             {
 #if DEBUG
                 base.SerializeToLocalFile(true);
@@ -166,7 +151,7 @@ namespace CoreSync.Core.Model
         {
             if (CoreSyncConfiguration.SingletonInstance != null)
             {
-                var sourceHeadEntriesBeforeSync = this.headEntries.Any();
+                var sourceHeadEntriesBeforeSync = headEntries.Any();
 
                 CoreSyncProcessor.Log("Fetching head entries.", writeLogEntry: false);
 
@@ -207,10 +192,7 @@ namespace CoreSync.Core.Model
         /// <returns>
         /// Returns instance of <see cref="CoreSyncRepository"/>.
         /// </returns>
-        private static CoreSyncRepository Deserialize()
-        {
-            return CoreSyncSerializeableBase<CoreSyncRepository>.DeserializeFromLocalFile(CoreSyncRepository.FullName);
-        }
+        private static CoreSyncRepository Deserialize() => DeserializeFromLocalFile(FullName);
 
         /// <summary>
         /// Method is called on deserialization of <see cref="CoreSyncRepository"/> instance.
@@ -219,28 +201,25 @@ namespace CoreSync.Core.Model
         /// Contains instance of <see cref="StreamingContext"/>.
         /// </param>
         [OnDeserialized]
-        private void OnDeserialized(StreamingContext context)
-        {
-            this.ConfigureHeadEntriesCollection();
-        }
+        private void OnDeserialized(StreamingContext context) => ConfigureHeadEntriesCollection();
 
         /// <summary>
         /// Configures <see cref="ObservableCollection{CCloudHeadEntry}"/> instance of <see cref="CoreSyncRepository"/>.
         /// </summary>
         private void ConfigureHeadEntriesCollection()
         {
-            this.headEntries.CollectionChanged += (s, e) =>
+            headEntries.CollectionChanged += (s, e) =>
             {
-                if (this.headEntries.Any())
+                if (headEntries.Any())
                 {
-                    if (this.headEntries.Count > 1)
+                    if (headEntries.Count > 1)
                     {
-                        this.headEntries = new ObservableCollection<CoreSyncHeadEntry>(CoreSyncRepository.SingletonInstance.HeadEntries.OrderBy(x => x.RelativeName));
+                        headEntries = new ObservableCollection<CoreSyncHeadEntry>(SingletonInstance.HeadEntries.OrderBy(x => x.RelativeName));
 
-                        this.ConfigureHeadEntriesCollection();
+                        ConfigureHeadEntriesCollection();
                     }
 
-                    this.SaveToFileSystem();
+                    SaveToFileSystem();
                 }
                 else
                 {

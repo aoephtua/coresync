@@ -24,7 +24,7 @@ namespace CoreSync.Core
         /// <summary>
         /// Contains <see cref="string"/> value with base directory name of <see cref="CoreSyncProcessor"/>.
         /// </summary>
-        public const string BaseDirectoryName = "." + CoreSyncProcessor.ApplicationName;
+        public const string BaseDirectoryName = "." + ApplicationName;
 
         /// <summary>
         /// Contains <see cref="string"/> value with log directory name of <see cref="CoreSyncProcessor"/>.
@@ -35,9 +35,9 @@ namespace CoreSync.Core
         /// Cotains <see cref="string"/> value with full qualified path of working directory of <see cref="CoreSyncProcessor"/>.
         /// </summary>
 #if DEBUG
-        public static string WorkingDirectoryPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), CoreSyncProcessor.ApplicationName);
+        public static string WorkingDirectoryPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), ApplicationName);
 #else
-        public static string WorkingDirectoryPath = CoreSyncProcessor.GetDataDirectory(Environment.CurrentDirectory);
+        public static string WorkingDirectoryPath = GetDataDirectory(Environment.CurrentDirectory);
 #endif
 
         /// <summary>
@@ -72,7 +72,7 @@ namespace CoreSync.Core
         /// </param>
         public static void Log(string data, CoreSyncLogLevel logLevel = CoreSyncLogLevel.Info, bool writeLogEntry = true)
         {
-            if (!String.IsNullOrEmpty(data))
+            if (!string.IsNullOrEmpty(data))
             {
                 var logEntry = new CoreSyncLogEntry()
                 {
@@ -83,7 +83,7 @@ namespace CoreSync.Core
 
                 if (writeLogEntry)
                 {
-                    var logFileName = CoreSyncProcessor.GetFullName(Path.Combine(CoreSyncProcessor.LogDirectoryName, String.Format("{0}.log", DateTime.Now.ToString("yyyyMMdd"))));
+                    var logFileName = GetFullName(Path.Combine(LogDirectoryName, string.Format("{0}.log", DateTime.Now.ToString("yyyyMMdd"))));
 
                     Directory.CreateDirectory(new FileInfo(logFileName).DirectoryName);
 
@@ -93,7 +93,7 @@ namespace CoreSync.Core
                     }
                 }
 
-                CoreSyncProcessor.LogNotification(logEntry);
+                LogNotification(logEntry);
             }
         }
 
@@ -111,7 +111,7 @@ namespace CoreSync.Core
         /// </param>
         public static void Log(Exception e, CoreSyncLogLevel logLevel = CoreSyncLogLevel.Error, bool writeLogEntry = true)
         {
-            CoreSyncProcessor.Log(e.ToString(), CoreSyncLogLevel.Error, writeLogEntry);
+            Log(e.ToString(), CoreSyncLogLevel.Error, writeLogEntry);
         }
 
         /// <summary>
@@ -127,7 +127,7 @@ namespace CoreSync.Core
         {
             var directoryInfo = new DirectoryInfo(directory);
 
-            return directoryInfo.Name == CoreSyncProcessor.BaseDirectoryName ? directoryInfo.Parent.FullName : directory;
+            return directoryInfo.Name == BaseDirectoryName ? directoryInfo.Parent.FullName : directory;
         }
 
         /// <summary>
@@ -136,10 +136,7 @@ namespace CoreSync.Core
         /// <returns>
         /// Returns <see cref="string"/> value with directory path.
         /// </returns>
-        public static string GetFullBaseDirectory()
-        {
-            return Path.Combine(CoreSyncProcessor.WorkingDirectoryPath, CoreSyncProcessor.BaseDirectoryName);
-        }
+        public static string GetFullBaseDirectory() => Path.Combine(WorkingDirectoryPath, BaseDirectoryName);
 
         /// <summary>
         /// Gets <see cref="string"/> value with full name of <see cref="CoreSyncProcessor"/>.
@@ -150,10 +147,7 @@ namespace CoreSync.Core
         /// <returns>
         /// Returns <see cref="string"/> value with full name.
         /// </returns>
-        public static string GetFullName(string filename)
-        {
-            return Path.Combine(CoreSyncProcessor.GetFullBaseDirectory(), filename);
-        }
+        public static string GetFullName(string filename) => Path.Combine(GetFullBaseDirectory(), filename);
 
         /// <summary>
         /// Executes functionalities related to command for initializing of <see cref="CoreSyncProcessor"/>.
@@ -166,11 +160,11 @@ namespace CoreSync.Core
         /// </param>
         public static void Initialize(string passphrase, string encryptedDirectory = null)
         {
-            if (!String.IsNullOrEmpty(passphrase))
+            if (!string.IsNullOrEmpty(passphrase))
             {
                 if (!CoreSyncConfiguration.FileExists)
                 {
-                    var directory = Directory.CreateDirectory(CoreSyncProcessor.GetFullBaseDirectory());
+                    var directory = Directory.CreateDirectory(GetFullBaseDirectory());
 
                     directory.Attributes |= FileAttributes.Hidden;
 
@@ -181,11 +175,11 @@ namespace CoreSync.Core
 
                     configuration.SerializeToLocalFile(true);
 
-                    CoreSyncProcessor.Log("Initialization completed successfully.", writeLogEntry: false);
+                    Log("Initialization completed successfully.", writeLogEntry: false);
                 }
                 else
                 {
-                    CoreSyncProcessor.Log("Configuration file already exists. Use 'config' command.", logLevel: CoreSyncLogLevel.Error, writeLogEntry: false);
+                    Log("Configuration file already exists. Use 'config' command.", logLevel: CoreSyncLogLevel.Error, writeLogEntry: false);
                 }
             }
         }
@@ -206,7 +200,7 @@ namespace CoreSync.Core
             }
             else
             {
-                CoreSyncProcessor.Log("Configuring requires valid values.", logLevel: CoreSyncLogLevel.Error, writeLogEntry: false);
+                Log("Configuring requires valid values.", logLevel: CoreSyncLogLevel.Error, writeLogEntry: false);
             }
         }
 
@@ -224,11 +218,11 @@ namespace CoreSync.Core
             {
                 config.SerializeToLocalFile(true);
 
-                CoreSyncProcessor.Log("Passphrase changed successfully.", writeLogEntry: false);
+                Log("Passphrase changed successfully.", writeLogEntry: false);
             }
             else
             {
-                CoreSyncProcessor.Log("Passphrase hasn't been changed.", logLevel: CoreSyncLogLevel.Error, writeLogEntry: false);
+                Log("Passphrase hasn't been changed.", logLevel: CoreSyncLogLevel.Error, writeLogEntry: false);
             }
         }
 
@@ -239,7 +233,7 @@ namespace CoreSync.Core
         {
             CoreSyncRepository.SingletonInstance.ProcessSynchronizationOfFileSystemEntries();
 
-            CoreSyncProcessor.Log("Synchronization completed.", writeLogEntry: false);
+            Log("Synchronization completed.", writeLogEntry: false);
         }
 
         /// <summary>
@@ -250,17 +244,17 @@ namespace CoreSync.Core
         /// </param>
         public static void Detach(string directoryPath = null)
         {
-            directoryPath = directoryPath ?? CoreSyncProcessor.GetFullBaseDirectory();
+            directoryPath = directoryPath ?? GetFullBaseDirectory();
 
             if (Directory.Exists(directoryPath))
             {
                 Directory.Delete(directoryPath, true);
 
-                CoreSyncProcessor.Log("Detaching completed successfully.", writeLogEntry: false);
+                Log("Detaching completed successfully.", writeLogEntry: false);
             }
             else
             {
-                CoreSyncProcessor.Log(String.Format("Directory \"{0}\" does not exists.", directoryPath), logLevel: CoreSyncLogLevel.Error, writeLogEntry: false);
+                Log(string.Format("Directory \"{0}\" does not exists.", directoryPath), logLevel: CoreSyncLogLevel.Error, writeLogEntry: false);
             }
         }
 
@@ -275,18 +269,18 @@ namespace CoreSync.Core
         /// </param>
         public static void Reset(string passphrase, string encryptedDirectory = null)
         {
-            if (!String.IsNullOrEmpty(passphrase))
+            if (!string.IsNullOrEmpty(passphrase))
             {
-                var directoryPath = CoreSyncProcessor.GetFullBaseDirectory();
+                var directoryPath = GetFullBaseDirectory();
 
                 if (Directory.Exists(directoryPath))
                 {
-                    CoreSyncProcessor.Detach(directoryPath);
-                    CoreSyncProcessor.Initialize(passphrase, encryptedDirectory);
+                    Detach(directoryPath);
+                    Initialize(passphrase, encryptedDirectory);
                 }
                 else
                 {
-                    CoreSyncProcessor.Log(String.Format("Directory \"{0}\" does not exists.", directoryPath), logLevel: CoreSyncLogLevel.Error, writeLogEntry: false);
+                    Log(string.Format("Directory \"{0}\" does not exists.", directoryPath), logLevel: CoreSyncLogLevel.Error, writeLogEntry: false);
                 }
             }
         }
@@ -299,16 +293,13 @@ namespace CoreSync.Core
         /// </returns>
         public static string GetApplicationDataFolderPath()
         {
-            return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), CoreSyncProcessor.ApplicationName);
+            return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ApplicationName);
         }
 
         /// <summary>
         /// Creates application data <see cref="Directory"/> of <see cref="CoreSyncProcessor"/>.
         /// </summary>
-        public static void CreateApplicationDataFolder()
-        {
-            Directory.CreateDirectory(CoreSyncProcessor.GetApplicationDataFolderPath());
-        }
+        public static void CreateApplicationDataFolder() => Directory.CreateDirectory(GetApplicationDataFolderPath());
 
         #endregion
     }

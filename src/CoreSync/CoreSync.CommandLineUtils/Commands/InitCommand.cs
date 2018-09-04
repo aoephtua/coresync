@@ -29,9 +29,9 @@ namespace CoreSync.CommandLineUtils.Commands
         /// </summary>
         protected override void Execute()
         {
-            if (ConfigurationCommand.GetPassphrase(out string passphrase))
+            if (GetPassphrase(out string passphrase))
             {
-                CoreSyncProcessor.Initialize(passphrase, base.EncryptedDirectory);
+                CoreSyncProcessor.Initialize(passphrase, EncryptedDirectory);
             }
         }
 

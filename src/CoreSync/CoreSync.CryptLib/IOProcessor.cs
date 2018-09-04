@@ -48,9 +48,9 @@ namespace CoreSync.CryptLib
         /// </param>
         public static void Write(string source, Stream target, Encoding encoding = null)
         {
-            IOProcessor.SetEncoding(ref encoding);
+            SetEncoding(ref encoding);
 
-            IOProcessor.Write(encoding.GetBytes(source), target);
+            Write(encoding.GetBytes(source), target);
         }
 
         /// <summary>
@@ -90,9 +90,9 @@ namespace CoreSync.CryptLib
         /// </param>
         public static string ReadString(Stream source, int length, Encoding encoding = null)
         {
-            IOProcessor.SetEncoding(ref encoding);
+            SetEncoding(ref encoding);
 
-            return encoding.GetString(IOProcessor.Read(source, length));
+            return encoding.GetString(Read(source, length));
         }
 
         /// <summary>
@@ -101,10 +101,7 @@ namespace CoreSync.CryptLib
         /// <param name="s">
         /// Contains instance of <see cref="Stream"/>.
         /// </param>
-        public static void ResetStream(Stream s)
-        {
-            s.Seek(0, SeekOrigin.Begin);
-        }
+        public static void ResetStream(Stream s) => s.Seek(0, SeekOrigin.Begin);
 
         #endregion
 
@@ -116,10 +113,7 @@ namespace CoreSync.CryptLib
         /// <param name="encoding">
         /// Contains instance of <see cref="Encoding"/>.
         /// </param>
-        private static void SetEncoding(ref Encoding encoding)
-        {
-            encoding = encoding ?? Encoding.UTF8;
-        }
+        private static void SetEncoding(ref Encoding encoding) => encoding = encoding ?? Encoding.UTF8;
 
         #endregion
     }

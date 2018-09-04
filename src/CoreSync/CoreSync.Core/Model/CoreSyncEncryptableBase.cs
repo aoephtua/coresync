@@ -27,7 +27,7 @@ namespace CoreSync.Core.Model
         /// </returns>
         public virtual bool EncryptInstance(string passphrase)
         {
-            if (!String.IsNullOrEmpty(TargetFileName))
+            if (!string.IsNullOrEmpty(TargetFileName))
             {
                 try
                 {
@@ -58,7 +58,7 @@ namespace CoreSync.Core.Model
         /// </returns>
         public static T DecryptInstance(string targetFileName, string passphrase)
         {
-            if (!String.IsNullOrEmpty(targetFileName))
+            if (!string.IsNullOrEmpty(targetFileName))
             {
                 try
                 {

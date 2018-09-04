@@ -45,9 +45,9 @@ namespace CoreSync.Core.Model
         /// </returns>
         public override string ToString()
         {
-            var logLevelName = Enum.GetName(typeof(CoreSyncLogLevel), this.LogLevel);
+            var logLevelName = Enum.GetName(typeof(CoreSyncLogLevel), LogLevel);
 
-            return this.DataOnly ? String.Format("{0}: {1}", logLevelName, this.Data) : String.Format("{0}  {1}  {2}", this.Date, logLevelName, this.Data);
+            return DataOnly ? string.Format("{0}: {1}", logLevelName, Data) : string.Format("{0}  {1}  {2}", Date, logLevelName, Data);
         }
 
         #endregion

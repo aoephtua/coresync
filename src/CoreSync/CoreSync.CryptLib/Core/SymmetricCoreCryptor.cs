@@ -29,11 +29,11 @@ namespace CoreSync.CryptLib.Core
         /// </param>
         public SymmetricCoreCryptor(SymmetricCoreCryptorConfiguration configuration)
         {
-            this.Configuration = configuration;
+            Configuration = configuration;
 
-            this.OnProgressChanged += delegate { };
-            this.OnComplete += delegate { };
-            this.OnError += delegate { };
+            OnProgressChanged += delegate { };
+            OnComplete += delegate { };
+            OnError += delegate { };
         }
 
         #endregion
@@ -102,7 +102,7 @@ namespace CoreSync.CryptLib.Core
 
             try
             {
-                using (SymmetricAlgorithm SACrypto = this.CreateSymmetricAlgorithm(passphrase, salt))
+                using (SymmetricAlgorithm SACrypto = CreateSymmetricAlgorithm(passphrase, salt))
                 {
                     using (ICryptoTransform encryptor = SACrypto.CreateEncryptor(SACrypto.Key, SACrypto.IV))
                     {
@@ -114,7 +114,7 @@ namespace CoreSync.CryptLib.Core
             }
             catch (Exception e)
             {
-                this.OnError(e);
+                OnError(e);
 
                 return null;
             }
@@ -139,13 +139,13 @@ namespace CoreSync.CryptLib.Core
         {
             try
             {
-                using (SymmetricAlgorithm SACrypto = this.CreateSymmetricAlgorithm(passphrase, salt))
+                using (SymmetricAlgorithm SACrypto = CreateSymmetricAlgorithm(passphrase, salt))
                 {
                     using (ICryptoTransform encryptor = SACrypto.CreateEncryptor(SACrypto.Key, SACrypto.IV))
                     {
                         CryptoStream cs = new CryptoStream(target, encryptor, CryptoStreamMode.Write);
 
-                        this.TransmitStreamData(source, cs);
+                        TransmitStreamData(source, cs);
 
                         cs.FlushFinalBlock();
                     }
@@ -153,12 +153,12 @@ namespace CoreSync.CryptLib.Core
             }
             catch (Exception e)
             {
-                this.OnError(e);
+                OnError(e);
 
                 return;
             }
 
-            this.OnComplete();
+            OnComplete();
         }
 
         /// <summary>
@@ -185,7 +185,7 @@ namespace CoreSync.CryptLib.Core
 
             try
             {
-                using (SymmetricAlgorithm SACrypto = this.CreateSymmetricAlgorithm(passphrase, salt))
+                using (SymmetricAlgorithm SACrypto = CreateSymmetricAlgorithm(passphrase, salt))
                 {
                     using (ICryptoTransform decryptor = SACrypto.CreateDecryptor(SACrypto.Key, SACrypto.IV))
                     {
@@ -197,7 +197,7 @@ namespace CoreSync.CryptLib.Core
             }
             catch (Exception e)
             {
-                this.OnError(e);
+                OnError(e);
 
                 return null;
             }
@@ -222,29 +222,33 @@ namespace CoreSync.CryptLib.Core
         {
             try
             {
-                using (SymmetricAlgorithm SACrypto = this.CreateSymmetricAlgorithm(passphrase, salt))
+                using (SymmetricAlgorithm SACrypto = CreateSymmetricAlgorithm(passphrase, salt))
                 {
                     using (ICryptoTransform decryptor = SACrypto.CreateDecryptor(SACrypto.Key, SACrypto.IV))
                     {
                         CryptoStream cs = new CryptoStream(source, decryptor, CryptoStreamMode.Read);
 
-                        this.TransmitStreamData(cs, target);
+                        TransmitStreamData(cs, target);
                     }
                 }
             }
             catch (Exception e)
             {
-                this.OnError(e);
+                OnError(e);
             }
 
-            this.OnComplete();
+            OnComplete();
         }
 
         /// <summary>
-        /// 
+        /// Generates <see cref="string"/> with random passphrase.
         /// </summary>
-        /// <param name="length"></param>
-        /// <returns></returns>
+        /// <param name="length">
+        /// Contains <see cref="int"/> with passphrase length.
+        /// </param>
+        /// <returns>
+        /// Returns <see cref="string"/> with passphrase.
+        /// </returns>
         public static string GeneratePassphrase(int length = 32)
         {
             using (var rng = new RNGCryptoServiceProvider())
@@ -302,8 +306,8 @@ namespace CoreSync.CryptLib.Core
 
                 ouput.Write(buffer, 0, currentBlockSize);
 
-                this.cancelFlag = false;
-                this.OnProgressChanged(totalBytes, ref this.cancelFlag);
+                cancelFlag = false;
+                OnProgressChanged(totalBytes, ref cancelFlag);
 
                 if (cancelFlag == true)
                 {

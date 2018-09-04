@@ -31,7 +31,7 @@ namespace CoreSync.CryptLib
         {
             byte[] bytes = Encoding.UTF8.GetBytes(input);
 
-            return HashVault.Compute(bytes, hashName);
+            return Compute(bytes, hashName);
         }
 
         /// <summary>

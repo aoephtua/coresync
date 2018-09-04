@@ -4,7 +4,6 @@
 #region Using Directives
 
 using CoreSync.CryptLib.Core;
-using System;
 using Xunit;
 
 #endregion
@@ -23,7 +22,7 @@ namespace CoreSync.CryptLib.UnitTests
         {
             var passphrase = SymmetricCoreCryptor.GeneratePassphrase();
 
-            Assert.False(String.IsNullOrEmpty(passphrase));
+            Assert.False(string.IsNullOrEmpty(passphrase));
         }
 
         /// <summary>

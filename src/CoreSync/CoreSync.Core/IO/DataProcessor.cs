@@ -126,7 +126,7 @@ namespace CoreSync.Core.IO
                 {
                     using (var fileStream = new FileStream(sourceFileName, FileMode.Open, FileAccess.Read))
                     {
-                        return DataProcessor.Encrypt(fileStream, fileName, passphrase);
+                        return Encrypt(fileStream, fileName, passphrase);
                     }
                 }
                 catch (Exception e)
@@ -202,7 +202,7 @@ namespace CoreSync.Core.IO
 
                 using (var fileStream = File.Create(targetFileName))
                 {
-                    var dataStream = DataProcessor.Decrypt(fileName, passphrase);
+                    var dataStream = Decrypt(fileName, passphrase);
 
                     if (dataStream != null)
                     {
@@ -258,7 +258,7 @@ namespace CoreSync.Core.IO
 
                 if (directoryPath != null)
                 {
-                    Directory.Delete(withEmptyParentDirectories ? DataProcessor.GetNoneEmptyParentDirectory(directoryPath) : directoryPath, true);
+                    Directory.Delete(withEmptyParentDirectories ? GetNoneEmptyParentDirectory(directoryPath) : directoryPath, true);
                 }
 
                 return true;
@@ -287,7 +287,7 @@ namespace CoreSync.Core.IO
         {
             foreach (var path in paths)
             {
-                if (!String.IsNullOrEmpty(path))
+                if (!string.IsNullOrEmpty(path))
                 {
                     basePath = Path.Combine(basePath, path);
                 }
@@ -319,7 +319,7 @@ namespace CoreSync.Core.IO
             }
             else
             {
-                return DataProcessor.GetNoneEmptyParentDirectory(parentDirectoryPath);
+                return GetNoneEmptyParentDirectory(parentDirectoryPath);
             }
         }
 

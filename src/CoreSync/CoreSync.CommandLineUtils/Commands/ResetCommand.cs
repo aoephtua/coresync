@@ -24,7 +24,7 @@ namespace CoreSync.CommandLineUtils.Commands
             {
                 if (ConfigurationCommand.GetPassphrase(out string passphrase))
                 {
-                    CoreSyncProcessor.Reset(passphrase, base.EncryptedDirectory);
+                    CoreSyncProcessor.Reset(passphrase, EncryptedDirectory);
                 }
             }
         }

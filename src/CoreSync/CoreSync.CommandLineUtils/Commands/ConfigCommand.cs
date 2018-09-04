@@ -21,7 +21,7 @@ namespace CoreSync.CommandLineUtils.Commands
         /// </summary>
         protected override void Execute()
         {
-            CoreSyncProcessor.Configure(base.EncryptedDirectory);
+            CoreSyncProcessor.Configure(EncryptedDirectory);
         }
 
         #endregion
@@ -38,7 +38,7 @@ namespace CoreSync.CommandLineUtils.Commands
             /// </summary>
             protected override void Execute()
             {
-                if (ConfigurationCommand.GetPassphrase(out string passphrase))
+                if (GetPassphrase(out string passphrase))
                 {
                     CoreSyncProcessor.SetPassphrase(passphrase);
                 }

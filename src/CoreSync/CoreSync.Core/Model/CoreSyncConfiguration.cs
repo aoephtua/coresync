@@ -34,9 +34,9 @@ namespace CoreSync.Core.Model
         /// </param>
         public CoreSyncConfiguration(string passphrase)
         {
-            this.SetPassphrase(passphrase);
+            SetPassphrase(passphrase);
 
-            this.filters = new List<string>() { "^(?!.*desktop.ini$).*", @"^(?!.*(\.db)$).*", @"^(?!.*(\\|/|^)(\.*)~).*$" };
+            filters = new List<string>() { "^(?!.*desktop.ini$).*", @"^(?!.*(\.db)$).*", @"^(?!.*(\\|/|^)(\.*)~).*$" };
         }
 
         #endregion
@@ -60,7 +60,7 @@ namespace CoreSync.Core.Model
         /// <summary>
         /// Contains <see cref="string"/> value with full name of <see cref="CoreSyncConfiguration"/>.
         /// </summary>
-        private static string FullName = CoreSyncProcessor.GetFullName(CoreSyncConfiguration.FileName);
+        private static string FullName = CoreSyncProcessor.GetFullName(FileName);
 
         #endregion
 
@@ -69,7 +69,7 @@ namespace CoreSync.Core.Model
         /// <summary>
         /// Gets <see cref="string"/> value with target file name of <see cref="CoreSyncConfiguration"/>.
         /// </summary>
-        protected override string TargetFileName => CoreSyncConfiguration.FullName;
+        protected override string TargetFileName => FullName;
 
         #endregion
 
@@ -87,7 +87,7 @@ namespace CoreSync.Core.Model
         {
             get
             {
-                singletonInstance = singletonInstance ?? CoreSyncConfiguration.Deserialize() ?? new CoreSyncConfiguration();
+                singletonInstance = singletonInstance ?? Deserialize() ?? new CoreSyncConfiguration();
 
                 return singletonInstance;
             }
@@ -96,13 +96,7 @@ namespace CoreSync.Core.Model
         /// <summary>
         /// Gets whether data file of <see cref="CoreSyncConfiguration"/> exists.
         /// </summary>
-        public static bool FileExists
-        {
-            get
-            {
-                return File.Exists(CoreSyncProcessor.GetFullName(CoreSyncConfiguration.FileName));
-            }
-        }
+        public static bool FileExists => File.Exists(CoreSyncProcessor.GetFullName(FileName));
 
         /// <summary>
         /// Contains <see cref="Guid"/> value with unique identifier of <see cref="CoreSyncConfiguration"/>.
@@ -115,15 +109,12 @@ namespace CoreSync.Core.Model
         /// </summary>
         public Guid Identifier
         {
-            get
-            {
-                return this.identifier;
-            }
+            get => identifier;
             private set
             {
-                if (this.identifier == Guid.Empty)
+                if (identifier == Guid.Empty)
                 {
-                    this.identifier = value;
+                    identifier = value;
                 }
             }
         }
@@ -131,33 +122,12 @@ namespace CoreSync.Core.Model
         /// <summary>
         /// Gets <see cref="string"/> value with file name of identifier of <see cref="CoreSyncConfiguration"/>.
         /// </summary>
-        public string IdentifierFileName
-        {
-            get
-            {
-                return Path.Combine(CoreSyncProcessor.GetApplicationDataFolderPath(), this.identifier.ToString("N"));
-            }
-        }
-
-        /// <summary>
-        /// Contains <see cref="string"/> value with passphrase of <see cref="CoreSyncConfiguration"/>.
-        /// </summary>
-        private string passphrase;
+        public string IdentifierFileName => Path.Combine(CoreSyncProcessor.GetApplicationDataFolderPath(), identifier.ToString("N"));
 
         /// <summary>
         /// Gets or sets <see cref="string"/> value with passphrase of <see cref="CoreSyncConfiguration"/>.
         /// </summary>
-        public string Passphrase
-        {
-            get
-            {
-                return this.passphrase;
-            }
-            private set
-            {
-                this.passphrase = value;
-            }
-        }
+        public string Passphrase { get; private set; }
 
         /// <summary>
         /// Contains <see cref="string"/> value with protected passphrase of <see cref="CoreSyncConfiguration"/>.
@@ -170,14 +140,8 @@ namespace CoreSync.Core.Model
         /// </summary>
         public string ProtectedPassphrase
         {
-            get
-            {
-                return this.protectedPassphrase;
-            }
-            private set
-            {
-                this.protectedPassphrase = value;
-            }
+            get => protectedPassphrase;
+            private set => protectedPassphrase = value;
         }
 
         /// <summary>
@@ -191,14 +155,8 @@ namespace CoreSync.Core.Model
         /// </summary>
         public string Entropy
         {
-            get
-            {
-                return this.entropy;
-            }
-            private set
-            {
-                this.entropy = value;
-            }
+            get => entropy;
+            private set => entropy = value;
         }
 
         /// <summary>
@@ -212,14 +170,8 @@ namespace CoreSync.Core.Model
         /// </summary>
         public string EncryptedDirectory
         {
-            get
-            {
-                return this.encryptedDirectory;
-            }
-            set
-            {
-                this.encryptedDirectory = value;
-            }
+            get => encryptedDirectory;
+            set => encryptedDirectory = value;
         }
 
         /// <summary>
@@ -233,14 +185,8 @@ namespace CoreSync.Core.Model
         /// </summary>
         public List<string> Filters
         {
-            get
-            {
-                return this.filters;
-            }
-            set
-            {
-                this.filters = value;
-            }
+            get => filters;
+            set => filters = value;
         }
 
         #endregion
@@ -258,9 +204,9 @@ namespace CoreSync.Core.Model
         /// </returns>
         public static bool IsValidEntryName(string fullName)
         {
-            if (!String.IsNullOrEmpty(fullName))
+            if (!string.IsNullOrEmpty(fullName))
             {
-                var relativeName = fullName.Replace(CoreSyncProcessor.WorkingDirectoryPath, String.Empty);
+                var relativeName = fullName.Replace(CoreSyncProcessor.WorkingDirectoryPath, string.Empty);
 
                 foreach (var filter in CoreSyncConfiguration.SingletonInstance.Filters)
                 {
@@ -285,16 +231,16 @@ namespace CoreSync.Core.Model
         /// </returns>
         public bool SetPassphrase(string passphrase)
         {
-            if (!String.IsNullOrEmpty(passphrase) && this.passphrase != passphrase)
+            if (!string.IsNullOrEmpty(passphrase) && Passphrase != passphrase)
             {
                 CoreSyncMasterVault masterVault = CoreSyncMasterVault.MasterVaultExists ? CoreSyncMasterVault.SingletonInstance : null;
 
                 var entropy = SymmetricCoreCryptor.GetSalt(32);
 
-                this.passphrase = passphrase;
+                Passphrase = passphrase;
                 this.entropy = Convert.ToBase64String(entropy);
 
-                this.SetProtectedKey(entropy);
+                SetProtectedKey(entropy);
 
                 if (masterVault != null)
                 {
@@ -318,7 +264,7 @@ namespace CoreSync.Core.Model
         /// </returns>
         public bool SetEncryptedDirectory(string encryptedDirectory)
         {
-            if (!String.IsNullOrEmpty(encryptedDirectory) && this.encryptedDirectory != encryptedDirectory && Path.IsPathRooted(encryptedDirectory))
+            if (!string.IsNullOrEmpty(encryptedDirectory) && this.encryptedDirectory != encryptedDirectory && Path.IsPathRooted(encryptedDirectory))
             {
                 this.encryptedDirectory = encryptedDirectory;
 
@@ -339,12 +285,12 @@ namespace CoreSync.Core.Model
         /// </returns>
         public string GetEncryptedDirectory(params string[] paths)
         {
-            if (!String.IsNullOrEmpty(this.encryptedDirectory))
+            if (!string.IsNullOrEmpty(encryptedDirectory))
             {
-                return DataProcessor.Combine(this.encryptedDirectory, paths);
+                return DataProcessor.Combine(encryptedDirectory, paths);
             }
 
-            return DataProcessor.Combine(Path.Combine(CoreSyncProcessor.GetFullBaseDirectory(), CoreSyncConfiguration.VaultBaseDirectory), paths);
+            return DataProcessor.Combine(Path.Combine(CoreSyncProcessor.GetFullBaseDirectory(), VaultBaseDirectory), paths);
         }
 
         #endregion
@@ -359,7 +305,7 @@ namespace CoreSync.Core.Model
         /// </returns>
         private static CoreSyncConfiguration Deserialize()
         {
-            return CoreSyncSerializeableBase<CoreSyncConfiguration>.DeserializeFromLocalFile(CoreSyncConfiguration.FullName);
+            return DeserializeFromLocalFile(FullName);
         }
 
         /// <summary>
@@ -371,9 +317,9 @@ namespace CoreSync.Core.Model
         [OnDeserialized]
         private void OnDeserialized(StreamingContext context)
         {
-            if (!String.IsNullOrEmpty(this.entropy))
+            if (!string.IsNullOrEmpty(entropy))
             {
-                this.SetPlainTextKey(Convert.FromBase64String(this.entropy));
+                SetPlainTextKey(Convert.FromBase64String(entropy));
             }
         }
 
@@ -387,17 +333,17 @@ namespace CoreSync.Core.Model
         {
             if (CoreSyncProcessor.IsWindows)
             {
-                this.protectedPassphrase = Convert.ToBase64String(DPAVault.Protect(this.passphrase, entropy));
+                protectedPassphrase = Convert.ToBase64String(DPAVault.Protect(Passphrase, entropy));
             }
             else
             {
-                this.Identifier = Guid.NewGuid();
+                Identifier = Guid.NewGuid();
 
-                this.protectedPassphrase = SymmetricCoreCryptor.GeneratePassphrase(64);
+                protectedPassphrase = SymmetricCoreCryptor.GeneratePassphrase(64);
 
                 CoreSyncProcessor.CreateApplicationDataFolder();
 
-                File.WriteAllBytes(this.IdentifierFileName, new RijndaelManagedCoreCryptor().Encrypt(this.passphrase, this.protectedPassphrase, entropy));
+                File.WriteAllBytes(IdentifierFileName, new RijndaelManagedCoreCryptor().Encrypt(Passphrase, protectedPassphrase, entropy));
             }
         }
 
@@ -411,11 +357,11 @@ namespace CoreSync.Core.Model
         {
             if (CoreSyncProcessor.IsWindows)
             {
-                this.passphrase = DPAVault.Unprotect(Convert.FromBase64String(this.protectedPassphrase), entropy);
+                Passphrase = DPAVault.Unprotect(Convert.FromBase64String(protectedPassphrase), entropy);
             }
             else
             {
-                this.passphrase = new RijndaelManagedCoreCryptor().Decrypt(File.ReadAllBytes(this.IdentifierFileName), this.protectedPassphrase, entropy);
+                Passphrase = new RijndaelManagedCoreCryptor().Decrypt(File.ReadAllBytes(IdentifierFileName), protectedPassphrase, entropy);
             }
         }
 

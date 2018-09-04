@@ -39,7 +39,7 @@ namespace CoreSync.CommandLineUtils.Commands
         {
             passphrase = Prompt.GetPassword("Passphrase: ");
 
-            if (!String.IsNullOrEmpty(passphrase))
+            if (!string.IsNullOrEmpty(passphrase))
             {
                 if (passphrase != Prompt.GetPassword("Confirm: "))
                 {

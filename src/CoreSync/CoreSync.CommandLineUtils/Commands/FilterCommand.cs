@@ -29,7 +29,7 @@ namespace CoreSync.CommandLineUtils.Commands
         {
             Console.WriteLine("Error: You must specify a subcommand.");
 
-            base.App.ShowHelp();
+            App.ShowHelp();
         }
 
         #endregion
@@ -97,9 +97,9 @@ namespace CoreSync.CommandLineUtils.Commands
             {
                 var cnt = 0;
 
-                foreach (var filterValue in this.FilterValues)
+                foreach (var filterValue in FilterValues)
                 {
-                    if (this.IsValidRegex(filterValue) && !CoreSyncConfiguration.SingletonInstance.Filters.Any(x => x == filterValue))
+                    if (IsValidRegex(filterValue) && !CoreSyncConfiguration.SingletonInstance.Filters.Any(x => x == filterValue))
                     {
                         CoreSyncConfiguration.SingletonInstance.Filters.Add(filterValue);
 
@@ -112,7 +112,7 @@ namespace CoreSync.CommandLineUtils.Commands
                     CoreSyncConfiguration.SingletonInstance.SerializeToLocalFile(true);
                 }
 
-                FilterCommand.OutputProcessedFilterMessage("Added", cnt);
+                OutputProcessedFilterMessage("Added", cnt);
             }
 
             #endregion
@@ -130,7 +130,7 @@ namespace CoreSync.CommandLineUtils.Commands
             /// </returns>
             private bool IsValidRegex(string pattern)
             {
-                if (String.IsNullOrEmpty(pattern)) return false;
+                if (string.IsNullOrEmpty(pattern)) return false;
 
                 try
                 {
@@ -171,9 +171,9 @@ namespace CoreSync.CommandLineUtils.Commands
                 {
                     var cnt = 0;
 
-                    if (this.FilterNumbers.Length > 0)
+                    if (FilterNumbers.Length > 0)
                     {
-                        cnt = this.DeleteFilterValues();
+                        cnt = DeleteFilterValues();
                     }
                     else
                     {
@@ -190,7 +190,7 @@ namespace CoreSync.CommandLineUtils.Commands
                         CoreSyncConfiguration.SingletonInstance.SerializeToLocalFile(true);
                     }
 
-                    FilterCommand.OutputProcessedFilterMessage("Removed", cnt);
+                    OutputProcessedFilterMessage("Removed", cnt);
                 }
             }
 
@@ -208,7 +208,7 @@ namespace CoreSync.CommandLineUtils.Commands
             {
                 var filterValues = new List<string>();
 
-                foreach (var filterNumber in this.FilterNumbers)
+                foreach (var filterNumber in FilterNumbers)
                 {
                     if (int.TryParse(filterNumber, out int number) && --number < CoreSyncConfiguration.SingletonInstance.Filters.Count)
                     {

@@ -72,7 +72,7 @@ namespace CoreSync.Core.IO.Serialization
             }
             catch (Exception e)
             {
-                this.Error = e;
+                Error = e;
             }
         }
 
@@ -97,12 +97,12 @@ namespace CoreSync.Core.IO.Serialization
             {
                 using (var stream = File.Create(filename))
                 {
-                    this.Serialize<T>(obj, stream, indent);
+                    Serialize<T>(obj, stream, indent);
                 }
             }
             catch (Exception e)
             {
-                this.Error = e;
+                Error = e;
             }
         }
 
@@ -128,7 +128,7 @@ namespace CoreSync.Core.IO.Serialization
             }
             catch (Exception e)
             {
-                this.Error = e;
+                Error = e;
 
                 return default(T);
             }
@@ -173,7 +173,7 @@ namespace CoreSync.Core.IO.Serialization
             }
             catch (Exception e)
             {
-                this.Error = e;
+                Error = e;
             }
 
             T result = this.Deserialize<T>(stream);

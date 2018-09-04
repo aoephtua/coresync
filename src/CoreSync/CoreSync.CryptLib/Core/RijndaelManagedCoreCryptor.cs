@@ -51,14 +51,14 @@ namespace CoreSync.CryptLib.Core
         /// </returns>
         protected override SymmetricAlgorithm CreateSymmetricAlgorithm(string key, byte[] salt)
         {
-            var k = new Rfc2898DeriveBytes(key, salt, this.Configuration.Iterations);
+            var k = new Rfc2898DeriveBytes(key, salt, Configuration.Iterations);
 
             var rijndaelAlg = new RijndaelManaged()
             {
-                BlockSize = this.Configuration.BlockSize,
-                KeySize = this.Configuration.KeySize,
-                Mode = this.Configuration.CipherMode,
-                Padding = this.Configuration.PaddingMode
+                BlockSize = Configuration.BlockSize,
+                KeySize = Configuration.KeySize,
+                Mode = Configuration.CipherMode,
+                Padding = Configuration.PaddingMode
             };
 
             rijndaelAlg.Key = k.GetBytes(rijndaelAlg.KeySize / 8);
