@@ -17,7 +17,7 @@ namespace CoreSync.Core.IO.Serialization
         #region Public Properties
 
         /// <summary>
-        /// Gets or sets <see cref="Exception"/> instance of <see cref="JsonSerializer{T}"/>.
+        /// Gets or sets <see cref="Exception"/> instance of <see cref="JsonSerializer"/>.
         /// </summary>
         public Exception Error { get; set; }
 

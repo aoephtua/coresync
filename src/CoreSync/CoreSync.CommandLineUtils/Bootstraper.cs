@@ -14,12 +14,12 @@ namespace CoreSync.CommandLineUtils
 {
     [HelpOption]
     [Command(Name = CoreSyncProcessor.ApplicationName, ThrowOnUnexpectedArgument = false)]
-    [Subcommand("init", typeof(InitCommand))]
-    [Subcommand("config", typeof(ConfigCommand))]
-    [Subcommand("filter", typeof(FilterCommand))]
-    [Subcommand("sync", typeof(SyncCommand))]
-    [Subcommand("detach", typeof(DetachCommand))]
-    [Subcommand("reset", typeof(ResetCommand))]
+    [Subcommand(typeof(InitCommand))]
+    [Subcommand(typeof(ConfigCommand))]
+    [Subcommand(typeof(FilterCommand))]
+    [Subcommand(typeof(SyncCommand))]
+    [Subcommand(typeof(DetachCommand))]
+    [Subcommand(typeof(ResetCommand))]
     public class Bootstraper
     {
         #region Public Properties

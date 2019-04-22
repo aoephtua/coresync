@@ -11,7 +11,7 @@ using McMaster.Extensions.CommandLineUtils;
 namespace CoreSync.CommandLineUtils.Commands
 {
     [Command(Name = "config", Description = "Configure synchronization directory.", ThrowOnUnexpectedArgument = false)]
-    [Subcommand("pw", typeof(PassphraseCommand))]
+    [Subcommand(typeof(PassphraseCommand))]
     class ConfigCommand : ConfigurationCommand
     {
         #region Protected Functions
@@ -28,7 +28,7 @@ namespace CoreSync.CommandLineUtils.Commands
 
         #region Subcommands
 
-        [Command(Description = "Change master vault passphrase.")]
+        [Command(Name = "pw", Description = "Change master vault passphrase.")]
         class PassphraseCommand : SecuredCommandBase
         {
             #region Protected Functions

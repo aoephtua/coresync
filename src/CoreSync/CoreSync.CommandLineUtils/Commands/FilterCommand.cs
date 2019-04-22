@@ -15,9 +15,9 @@ using System.Text.RegularExpressions;
 namespace CoreSync.CommandLineUtils.Commands
 {
     [Command(Name = "filter",  Description = "Add, remove or list filters. See 'filter -?' for more details.", ThrowOnUnexpectedArgument = false)]
-    [Subcommand("ls", typeof(ListFiltersCommand))]
-    [Subcommand("add", typeof(AddFiltersCommand))]
-    [Subcommand("rm", typeof(RemoveFiltersCommand))]
+    [Subcommand(typeof(ListFiltersCommand))]
+    [Subcommand(typeof(AddFiltersCommand))]
+    [Subcommand(typeof(RemoveFiltersCommand))]
     class FilterCommand : SecuredCommandBase
     {
         #region Protected Functions
@@ -54,7 +54,7 @@ namespace CoreSync.CommandLineUtils.Commands
 
         #region Subcommands
 
-        [Command(Description = "List filters of configuration file.")]
+        [Command(Name = "ls", Description = "List filters of configuration file.")]
         class ListFiltersCommand : SecuredCommandBase
         {
             #region Protected Functions
@@ -75,7 +75,7 @@ namespace CoreSync.CommandLineUtils.Commands
             #endregion
         }
 
-        [Command(Description = "Add filters to configuration file. Regular expressions are supported.")]
+        [Command(Name = "add", Description = "Add filters to configuration file. Regular expressions are supported.")]
         class AddFiltersCommand : SecuredCommandBase
         {
             #region Private Properties
@@ -147,7 +147,7 @@ namespace CoreSync.CommandLineUtils.Commands
             #endregion
         }
 
-        [Command(Description = "Remove filters of configuration file.")]
+        [Command(Name = "rm", Description = "Remove filters of configuration file.")]
         class RemoveFiltersCommand : SecuredCommandBase
         {
             #region Private Properties
