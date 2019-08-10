@@ -77,7 +77,7 @@ Use "coresync [command] --help" for more information about a command.
 
 ## Requirements
 
-- Install the latest [.NET Core 2.0 Runtime](https://www.microsoft.com/net/download/all)
+- Install the latest [.NET Core 2.2 Runtime](https://dotnet.microsoft.com/download/dotnet-core/2.2)
 
 ## License
 
