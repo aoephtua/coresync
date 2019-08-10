@@ -4,6 +4,7 @@
 #region Using Directives
 
 using System;
+using System.Globalization;
 
 #endregion
 
@@ -17,6 +18,11 @@ namespace CoreSync.Core.Model
         /// Gets or sets <see cref="DateTime"/> value of <see cref="CoreSyncLogEntry"/>.
         /// </summary>
         public DateTime Date { get; set; }
+
+        /// <summary>
+        /// Gets <see cref="DateTime"/> of <see cref="CoreSyncLogEntry"/> as formatted value.
+        /// </summary>
+        public string OutputDate => Date.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture);
 
         /// <summary>
         /// Gets or sets <see cref="CoreSyncLogLevel"/> value of <see cref="CoreSyncLogEntry"/>.
@@ -47,7 +53,7 @@ namespace CoreSync.Core.Model
         {
             var logLevelName = Enum.GetName(typeof(CoreSyncLogLevel), LogLevel);
 
-            return DataOnly ? string.Format("{0}: {1}", logLevelName, Data) : string.Format("{0}  {1}  {2}", Date, logLevelName, Data);
+            return DataOnly ? string.Format("{0}: {1}", logLevelName, Data) : string.Format("{0}  {1}  {2}", OutputDate, logLevelName, Data);
         }
 
         #endregion
