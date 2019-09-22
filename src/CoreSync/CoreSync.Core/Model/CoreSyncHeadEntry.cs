@@ -210,7 +210,9 @@ namespace CoreSync.Core.Model
         {
             CoreSyncProcessor.Log("Initializing deletion of file system entries.", writeLogEntry: false);
 
-            var headEntriesForDeletion = CoreSyncRepository.SingletonInstance.HeadEntries.Where(x => !encryptedHeadEntries.Any(x2 => x2.Item2 == x.FileName)).ToList();
+            var headEntriesForDeletion = CoreSyncRepository.SingletonInstance.FilteredHeadEntries
+                .Where(x => !encryptedHeadEntries.Any(x2 => x2.Item2 == x.FileName))
+                .ToList();
 
             if (headEntriesForDeletion.Any())
             {
@@ -348,12 +350,15 @@ namespace CoreSync.Core.Model
         {
             CoreSyncProcessor.Log("Initializing deletion of vault entries.", writeLogEntry: false);
 
-            var removedHeadEntries = CoreSyncRepository.SingletonInstance.HeadEntries
-                .Where(x => !fileSystemEntryNames.Any(x2 => x2 == x.FullName))
+            var headEntries = CoreSyncRepository.SingletonInstance.FilteredHeadEntries;
+
+            var removedHeadEntries = headEntries
+                .Where(x => !fileSystemEntryNames
+                .Any(x2 => x2 == x.FullName))
                 .ToList();
 
-            var needlessHeadEntries = CoreSyncRepository.SingletonInstance.HeadEntries
-                .Where(x => !x.IsFile && CoreSyncRepository.SingletonInstance.HeadEntries
+            var needlessHeadEntries = headEntries
+                .Where(x => !x.IsFile && headEntries
                     .Where(x2 => !removedHeadEntries.Any(x3 => x3.FullName == x2.FullName))
                     .Any(x2 => x.FullName != x2.FullName && x2.FullName.StartsWith(x.FullName + Path.DirectorySeparatorChar)))
                 .ToList();

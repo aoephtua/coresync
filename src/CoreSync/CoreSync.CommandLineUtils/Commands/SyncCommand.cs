@@ -13,15 +13,22 @@ namespace CoreSync.CommandLineUtils.Commands
     [Command(Name = "sync", Description = "Synchronize data of current or specified directory.", ThrowOnUnexpectedArgument = false)]
     class SyncCommand : SecuredCommandBase
     {
+        #region Public Properties
+
+        /// <summary>
+        /// Gets or sets <see cref="string"/> value with subdirectory path option of <see cref="SyncCommand"/>.
+        /// </summary>
+        [Option(Template = "-subdir|--subdirectory", Description = "Contains the optional subdirectory path.")]
+        public string SubdirectoryPath { get; set; }
+
+        #endregion
+
         #region Protected Functions
 
         /// <summary>
         /// Executes command functionalities of <see cref="SyncCommand"/>.
         /// </summary>
-        protected override void Execute()
-        {
-            CoreSyncProcessor.Synchronize();
-        }
+        protected override void Execute() => CoreSyncProcessor.Synchronize(SubdirectoryPath);
 
         #endregion
     }

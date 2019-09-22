@@ -44,7 +44,7 @@ namespace CoreSync.Core.Model
         /// <summary>
         /// Contains <see cref="string"/> value with full name of <see cref="CoreSyncRepository"/>.
         /// </summary>
-        private static string FullName = CoreSyncProcessor.GetFullName(FileName);
+        private static readonly string FullName = CoreSyncProcessor.GetFullName(FileName);
 
         #endregion
 
@@ -93,10 +93,17 @@ namespace CoreSync.Core.Model
         public ObservableCollection<CoreSyncHeadEntry> HeadEntries => headEntries;
 
         /// <summary>
+        /// Gets filtered instance of <see cref="ObservableCollection{CCloudHeadEntry}"/>.
+        /// </summary>
+        public ObservableCollection<CoreSyncHeadEntry> FilteredHeadEntries => 
+            new ObservableCollection<CoreSyncHeadEntry>(headEntries
+                .Where(x => x.FullName.StartsWith(CoreSyncProcessor.ParentDirectoryPath + Path.DirectorySeparatorChar)));
+
+        /// <summary>
         /// Contains instance of <see cref="ObservableCollection{CCloudFileEntry}"/>.
         /// </summary>
         [DataMember(Order = 1, Name = "FileEntries")]
-        private ObservableCollection<CoreSyncFileEntry> fileEntries = new ObservableCollection<CoreSyncFileEntry>();
+        private readonly ObservableCollection<CoreSyncFileEntry> fileEntries = new ObservableCollection<CoreSyncFileEntry>();
 
         /// <summary>
         /// Gets instance of <see cref="ObservableCollection{CCloudFileEntry}"/>.
@@ -144,14 +151,11 @@ namespace CoreSync.Core.Model
         /// <summary>
         /// Processes synchroniaztion of file system entries of <see cref="CoreSyncRepository"/>.
         /// </summary>
-        /// <param name="configuration">
-        /// Contains instance of <see cref="CoreSyncConfiguration"/>.
-        /// </param>
         public void ProcessSynchronizationOfFileSystemEntries()
         {
             if (CoreSyncConfiguration.SingletonInstance != null)
             {
-                var sourceHeadEntriesBeforeSync = headEntries.Any();
+                var sourceHeadEntriesBeforeSync = FilteredHeadEntries.Any();
 
                 CoreSyncProcessor.Log("Fetching head entries.", writeLogEntry: false);
 
@@ -165,7 +169,7 @@ namespace CoreSync.Core.Model
 
                 CoreSyncProcessor.Log("Fetching source entries of file system.", writeLogEntry: false);
 
-                var fileSystemEntryNames = Directory.GetFileSystemEntries(CoreSyncProcessor.WorkingDirectoryPath, "*", SearchOption.AllDirectories)
+                var fileSystemEntryNames = Directory.GetFileSystemEntries(CoreSyncProcessor.ParentDirectoryPath, "*", SearchOption.AllDirectories)
                     .Where(x => !x.Contains(CoreSyncProcessor.BaseDirectoryName) && CoreSyncConfiguration.IsValidEntryName(x))
                     .ToList();
 

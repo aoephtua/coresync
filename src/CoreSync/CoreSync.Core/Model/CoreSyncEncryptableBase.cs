@@ -72,7 +72,7 @@ namespace CoreSync.Core.Model
                 }
             }
 
-            return default(T);
+            return default;
         }
 
         #endregion

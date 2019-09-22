@@ -60,7 +60,7 @@ namespace CoreSync.Core.Model
         /// <summary>
         /// Contains <see cref="string"/> value with full name of <see cref="CoreSyncConfiguration"/>.
         /// </summary>
-        private static string FullName = CoreSyncProcessor.GetFullName(FileName);
+        private static readonly string FullName = CoreSyncProcessor.GetFullName(FileName);
 
         #endregion
 
@@ -208,7 +208,7 @@ namespace CoreSync.Core.Model
             {
                 var relativeName = fullName.Replace(CoreSyncProcessor.WorkingDirectoryPath, string.Empty);
 
-                foreach (var filter in CoreSyncConfiguration.SingletonInstance.Filters)
+                foreach (var filter in SingletonInstance.Filters)
                 {
                     if (!Regex.IsMatch(relativeName, filter))
                     {

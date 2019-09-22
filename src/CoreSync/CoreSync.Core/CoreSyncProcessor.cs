@@ -50,6 +50,16 @@ namespace CoreSync.Core
         #region Public Properties
 
         /// <summary>
+        /// Gets or sets <see cref="string"/> value with subdirectory path of <see cref="CoreSyncProcessor"/>.
+        /// </summary>
+        public static string SubdirectoryPath { get; set; }
+
+        /// <summary>
+        /// Gets <see cref="string"/> value with parent directory path of <see cref="CoreSyncProcessor"/>.
+        /// </summary>
+        public static string ParentDirectoryPath => SubdirectoryPath ?? WorkingDirectoryPath;
+
+        /// <summary>
         /// Gets whether current operating system equals <see cref="OSPlatform.Windows"/>.
         /// </summary>
         public static bool IsWindows => RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
@@ -109,10 +119,19 @@ namespace CoreSync.Core
         /// <param name="writeLogEntry">
         /// Contains whether log entry should be written.
         /// </param>
-        public static void Log(Exception e, CoreSyncLogLevel logLevel = CoreSyncLogLevel.Error, bool writeLogEntry = true)
-        {
-            Log(e.ToString(), CoreSyncLogLevel.Error, writeLogEntry);
-        }
+        public static void Log(Exception e, CoreSyncLogLevel logLevel = CoreSyncLogLevel.Error, bool writeLogEntry = true) => 
+            Log(e.ToString(), logLevel, writeLogEntry);
+
+        /// <summary>
+        /// Adds instance of <see cref="CoreSyncLogEntry"/> with error to <see cref="CoreSyncProcessor"/>.
+        /// </summary>
+        /// <param name="msg">
+        /// Contains <see cref="string"/> with error message.
+        /// </param>
+        /// <param name="writeLogEntry">
+        /// Contains whether log entry should be written.
+        /// </param>
+        public static void Error(string msg, bool writeLogEntry = true) => Log(msg, CoreSyncLogLevel.Error, writeLogEntry);
 
         /// <summary>
         /// Gets <see cref="string"/> value with full data directory name of <see cref="CoreSyncProcessor"/>.
@@ -179,7 +198,7 @@ namespace CoreSync.Core
                 }
                 else
                 {
-                    Log("Configuration file already exists. Use 'config' command.", logLevel: CoreSyncLogLevel.Error, writeLogEntry: false);
+                    Error("Configuration file already exists. Use 'config' command.", writeLogEntry: false);
                 }
             }
         }
@@ -200,7 +219,7 @@ namespace CoreSync.Core
             }
             else
             {
-                Log("Configuring requires valid values.", logLevel: CoreSyncLogLevel.Error, writeLogEntry: false);
+                Error("Configuring requires valid values.", writeLogEntry: false);
             }
         }
 
@@ -222,18 +241,24 @@ namespace CoreSync.Core
             }
             else
             {
-                Log("Passphrase hasn't been changed.", logLevel: CoreSyncLogLevel.Error, writeLogEntry: false);
+                Error("Passphrase hasn't been changed.", writeLogEntry: false);
             }
         }
 
         /// <summary>
         /// Executes functionalities related to command for synchronization of <see cref="CoreSyncProcessor"/>.
         /// </summary>
-        public static void Synchronize()
+        /// <param name="subdirectoryPath">
+        /// Contains <see cref="string"/> with optional subdirectory path.
+        /// </param>
+        public static void Synchronize(string subdirectoryPath)
         {
-            CoreSyncRepository.SingletonInstance.ProcessSynchronizationOfFileSystemEntries();
+            if (string.IsNullOrEmpty(subdirectoryPath) || SetSubdirectoryPath(subdirectoryPath))
+            {
+                CoreSyncRepository.SingletonInstance.ProcessSynchronizationOfFileSystemEntries();
 
-            Log("Synchronization completed.", writeLogEntry: false);
+                Log("Synchronization completed.", writeLogEntry: false);
+            }
         }
 
         /// <summary>
@@ -254,7 +279,7 @@ namespace CoreSync.Core
             }
             else
             {
-                Log(string.Format("Directory \"{0}\" does not exists.", directoryPath), logLevel: CoreSyncLogLevel.Error, writeLogEntry: false);
+                Error(string.Format("Directory \"{0}\" does not exists.", directoryPath), writeLogEntry: false);
             }
         }
 
@@ -280,7 +305,7 @@ namespace CoreSync.Core
                 }
                 else
                 {
-                    Log(string.Format("Directory \"{0}\" does not exists.", directoryPath), logLevel: CoreSyncLogLevel.Error, writeLogEntry: false);
+                    Error(string.Format("Directory \"{0}\" does not exists.", directoryPath), writeLogEntry: false);
                 }
             }
         }
@@ -291,15 +316,62 @@ namespace CoreSync.Core
         /// <returns>
         /// Returns <see cref="string"/> value with full directory.
         /// </returns>
-        public static string GetApplicationDataFolderPath()
-        {
-            return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ApplicationName);
-        }
+        public static string GetApplicationDataFolderPath() =>
+            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ApplicationName);
 
         /// <summary>
         /// Creates application data <see cref="Directory"/> of <see cref="CoreSyncProcessor"/>.
         /// </summary>
         public static void CreateApplicationDataFolder() => Directory.CreateDirectory(GetApplicationDataFolderPath());
+
+        #endregion
+
+        #region Private Functions
+
+        /// <summary>
+        /// Sets <see cref="string"/> with subdirectory path of <see cref="CoreSyncProcessor"/>.
+        /// </summary>
+        /// <param name="subdirectoryPath">
+        /// Contains <see cref="string"/> with subdirectory path.
+        /// </param>
+        /// <returns>
+        /// Returns whether directory exists.
+        /// </returns>
+        private static bool SetSubdirectoryPath(string subdirectoryPath)
+        {
+            if (!string.IsNullOrEmpty(subdirectoryPath))
+            {
+                subdirectoryPath = TrimSeparatorChar(subdirectoryPath, Path.DirectorySeparatorChar);
+                subdirectoryPath = TrimSeparatorChar(subdirectoryPath, Path.AltDirectorySeparatorChar);
+
+                var directory = new DirectoryInfo(Path.Combine(WorkingDirectoryPath, subdirectoryPath));
+
+                if (directory.Exists)
+                {
+                    SubdirectoryPath = directory.FullName;
+
+                    return true;
+                }
+            }
+
+            Error(string.Format("Subdirectory path \"{0}\" is invalid.", subdirectoryPath), writeLogEntry: false);
+
+            return false;
+        }
+
+        /// <summary>
+        /// Removes all leading and trailing occurrences of separator characters.
+        /// </summary>
+        /// <param name="path">
+        /// Contains <see cref="string"/> value.
+        /// </param>
+        /// <param name="separatorChar">
+        /// Contains <see cref="char"/> with directory separator.
+        /// </param>
+        /// <returns>
+        /// Returns the string that remains after all occurrences of the separator.
+        /// </returns>
+        private static string TrimSeparatorChar(string path, char separatorChar) => path.Trim(separatorChar);
 
         #endregion
     }

@@ -74,10 +74,7 @@ namespace CoreSync.Core.Model
         /// <summary>
         /// Gets <see cref="string"/> value with <see cref="Guid"/> identifier as file name of <see cref="CoreSyncFileEntry"/>.
         /// </summary>
-        public string IdentifierAsFileName
-        {
-            get => GetIdentifierAsFileName(identifier);
-        }
+        public string IdentifierAsFileName => GetIdentifierAsFileName(identifier);
 
         /// <summary>
         /// Contains <see cref="string"/> value with file data checksum of <see cref="CoreSyncFileEntry"/>.
