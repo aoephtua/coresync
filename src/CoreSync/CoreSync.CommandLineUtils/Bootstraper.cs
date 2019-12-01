@@ -44,21 +44,18 @@ namespace CoreSync.CommandLineUtils
         /// </returns>
         public static int ExecuteApplication(string[] args) => CommandLineApplication.Execute<Bootstraper>(args);
 
-        #endregion
+		#endregion
 
-        #region Private Functions
+		#region Private Functions
 
-        /// <summary>
-        /// Raises on execution of <see cref="CommandLineApplication"/> instance.
-        /// </summary>
-        /// <returns>
-        /// Returns exit code for instance of <see cref="CommandLineApplication"/>.
-        /// </returns>
-        private int OnExecute()
-        {
-            return CommandLineApplication.Execute<SyncCommand>(RemainingArguments?.ToArray());
-        }
+		/// <summary>
+		/// Raises on execution of <see cref="CommandLineApplication"/> instance.
+		/// </summary>
+		/// <returns>
+		/// Returns exit code for instance of <see cref="CommandLineApplication"/>.
+		/// </returns>
+		private int OnExecute() => CommandLineApplication.Execute<SyncCommand>(RemainingArguments?.ToArray());
 
-        #endregion
-    }
+		#endregion
+	}
 }

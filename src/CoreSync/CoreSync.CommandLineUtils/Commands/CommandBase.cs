@@ -7,6 +7,7 @@ using CoreSync.CommandLineUtils.Attributes;
 using CoreSync.Core;
 using McMaster.Extensions.CommandLineUtils;
 using System;
+using System.Reflection;
 
 #endregion
 
@@ -23,6 +24,12 @@ namespace CoreSync.CommandLineUtils.Commands
         [Directory]
         [Option(Template = "-dir|--directory", Description = "Contains the base directory path. Default value is current directory path.")]
         public string Directory { get; set; }
+
+		/// <summary>
+		/// Gets or sets <see cref="bool"/> with flag to display current application version of <see cref="CommandBase"/>.
+		/// </summary>
+		[Option(Template = "-v|--version", Description = "Displays the current application version.")]
+		public bool Version { get; set; } 
 
         #endregion
 
@@ -55,30 +62,37 @@ namespace CoreSync.CommandLineUtils.Commands
         {
             App = app;
 
-            if (!string.IsNullOrEmpty(Directory))
-            {
-                CoreSyncProcessor.WorkingDirectoryPath = CoreSyncProcessor.GetDataDirectory(Directory);
-            }
+			if (Version)
+			{
+				Console.WriteLine("v{0}", GetVersion());
+			}
+			else
+			{
+				if (!string.IsNullOrEmpty(Directory))
+				{
+					CoreSyncProcessor.WorkingDirectoryPath = CoreSyncProcessor.GetDataDirectory(Directory);
+				}
 
-            if (CoreSyncProcessor.LogNotification == null)
-            {
-                CoreSyncProcessor.LogNotification += (logEntry) =>
-                {
-                    Console.WriteLine(logEntry.ToString());
-                };
-            }
+				if (CoreSyncProcessor.LogNotification == null)
+				{
+					CoreSyncProcessor.LogNotification += (logEntry) =>
+					{
+						Console.WriteLine(logEntry.ToString());
+					};
+				}
 
-            try
-            {
-                if (Valid)
-                {
-                    Execute();
-                }
-            }
-            catch (Exception e)
-            {
-                CoreSyncProcessor.Log(e);
-            }
+				try
+				{
+					if (Valid)
+					{
+						Execute();
+					}
+				}
+				catch (Exception e)
+				{
+					CoreSyncProcessor.Log(e);
+				}
+			}
 
             return 0;
         }
@@ -88,6 +102,19 @@ namespace CoreSync.CommandLineUtils.Commands
         /// </summary>
         protected abstract void Execute();
 
-        #endregion
-    }
+		#endregion
+
+		#region Private Functions
+
+		/// <summary>
+		/// Gets <see cref="string"/> with informational version of <see cref="Assembly"/>.
+		/// </summary>
+		/// <returns>
+		/// Returns <see cref="string"/> with current application version.
+		/// </returns>
+		private string GetVersion() =>
+			Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
+
+		#endregion
+	}
 }
