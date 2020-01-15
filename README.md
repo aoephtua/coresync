@@ -77,7 +77,7 @@ Use "coresync [command] --help" for more information about a command.
 
 ## Requirements
 
-- Install the latest [.NET Core 3.0 Runtime](https://dotnet.microsoft.com/download/dotnet-core/3.0)
+- Install the latest [.NET Core 3.1 Runtime](https://dotnet.microsoft.com/download/dotnet-core/3.1)
 
 ## License
 
