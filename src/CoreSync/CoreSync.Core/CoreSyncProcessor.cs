@@ -341,8 +341,13 @@ namespace CoreSync.Core
         {
             if (!string.IsNullOrEmpty(subdirectoryPath))
             {
-                subdirectoryPath = TrimSeparatorChar(subdirectoryPath, Path.DirectorySeparatorChar);
-                subdirectoryPath = TrimSeparatorChar(subdirectoryPath, Path.AltDirectorySeparatorChar);
+                var separators = new char[]
+                {
+                    Path.DirectorySeparatorChar,
+                    Path.AltDirectorySeparatorChar
+                };
+
+                subdirectoryPath = TrimSeparatorChars(subdirectoryPath, separators);
 
                 var directory = new DirectoryInfo(Path.Combine(WorkingDirectoryPath, subdirectoryPath));
 
@@ -366,12 +371,20 @@ namespace CoreSync.Core
         /// Contains <see cref="string"/> value.
         /// </param>
         /// <param name="separatorChar">
-        /// Contains <see cref="char"/> with directory separator.
+        /// Contains <see cref="char[]"/> with directory separators.
         /// </param>
         /// <returns>
-        /// Returns the string that remains after all occurrences of the separator.
+        /// Returns the string that remains after all occurrences of the separators.
         /// </returns>
-        private static string TrimSeparatorChar(string path, char separatorChar) => path.Trim(separatorChar);
+        private static string TrimSeparatorChars(string path, char[] separatorChars)
+        {
+            foreach (var separator in separatorChars)
+            {
+                path = path.Trim(separator);
+            }
+
+            return path;
+        }
 
         #endregion
     }
