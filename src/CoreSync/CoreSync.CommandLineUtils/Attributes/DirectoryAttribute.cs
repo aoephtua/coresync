@@ -30,7 +30,7 @@ namespace CoreSync.CommandLineUtils.Attributes
         /// Contains <see cref="object"/> value.
         /// </param>
         /// <param name="validationContext">
-        /// Contains instance of <see cref="ValidationContext>.
+        /// Contains instance of <see cref="ValidationContext">.
         /// </param>
         /// <returns>
         /// Returns instance of <see cref="ValidationResult"/>.
