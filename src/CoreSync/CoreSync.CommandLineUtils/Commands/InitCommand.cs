@@ -10,7 +10,7 @@ using McMaster.Extensions.CommandLineUtils;
 
 namespace CoreSync.CommandLineUtils.Commands
 {
-    [Command(Name = "init", Description = "Initialize synchronization directory.", ThrowOnUnexpectedArgument = false)]
+    [Command(Name = "init", Description = "Initialize synchronization directory.", UnrecognizedArgumentHandling = UnrecognizedArgumentHandling.StopParsingAndCollect)]
     class InitCommand : ConfigurationCommand
     {
         #region Protected Properties

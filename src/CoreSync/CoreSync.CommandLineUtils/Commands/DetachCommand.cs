@@ -10,7 +10,7 @@ using McMaster.Extensions.CommandLineUtils;
 
 namespace CoreSync.CommandLineUtils.Commands
 {
-    [Command(Name = "detach", Description = "Detach synchronization directory.", ThrowOnUnexpectedArgument = false)]
+    [Command(Name = "detach", Description = "Detach synchronization directory.", UnrecognizedArgumentHandling = UnrecognizedArgumentHandling.StopParsingAndCollect)]
     class DetachCommand : SecuredCommandBase
     {
         #region Protected Functions

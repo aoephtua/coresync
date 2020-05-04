@@ -10,7 +10,7 @@ using McMaster.Extensions.CommandLineUtils;
 
 namespace CoreSync.CommandLineUtils.Commands
 {
-    [Command(Name = "config", Description = "Configure synchronization directory.", ThrowOnUnexpectedArgument = false)]
+    [Command(Name = "config", Description = "Configure synchronization directory.", UnrecognizedArgumentHandling = UnrecognizedArgumentHandling.StopParsingAndCollect)]
     [Subcommand(typeof(PassphraseCommand))]
     class ConfigCommand : ConfigurationCommand
     {

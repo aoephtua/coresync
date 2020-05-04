@@ -10,7 +10,7 @@ using McMaster.Extensions.CommandLineUtils;
 
 namespace CoreSync.CommandLineUtils.Commands
 {
-    [Command(Name = "reset", Description = "Reset synchronization directory.", ThrowOnUnexpectedArgument = false)]
+    [Command(Name = "reset", Description = "Reset synchronization directory.", UnrecognizedArgumentHandling = UnrecognizedArgumentHandling.StopParsingAndCollect)]
     class ResetCommand : ConfigurationCommand
     {
         #region Protected Functions

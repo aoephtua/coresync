@@ -14,7 +14,7 @@ using System.Text.RegularExpressions;
 
 namespace CoreSync.CommandLineUtils.Commands
 {
-    [Command(Name = "filter",  Description = "Add, remove or list filters. See 'filter -?' for more details.", ThrowOnUnexpectedArgument = false)]
+    [Command(Name = "filter",  Description = "Add, remove or list filters. See 'filter -?' for more details.", UnrecognizedArgumentHandling = UnrecognizedArgumentHandling.StopParsingAndCollect)]
     [Subcommand(typeof(ListFiltersCommand))]
     [Subcommand(typeof(AddFiltersCommand))]
     [Subcommand(typeof(RemoveFiltersCommand))]

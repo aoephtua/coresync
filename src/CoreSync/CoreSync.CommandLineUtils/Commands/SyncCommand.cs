@@ -10,7 +10,7 @@ using McMaster.Extensions.CommandLineUtils;
 
 namespace CoreSync.CommandLineUtils.Commands
 {
-    [Command(Name = "sync", Description = "Synchronize data of current or specified directory.", ThrowOnUnexpectedArgument = false)]
+    [Command(Name = "sync", Description = "Synchronize data of current or specified directory.", UnrecognizedArgumentHandling = UnrecognizedArgumentHandling.StopParsingAndCollect)]
     class SyncCommand : SecuredCommandBase
     {
         #region Public Properties
