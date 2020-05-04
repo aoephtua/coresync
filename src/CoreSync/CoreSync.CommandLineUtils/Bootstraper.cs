@@ -4,6 +4,7 @@
 #region Using Directives
 
 using CoreSync.CommandLineUtils.Commands;
+using CoreSync.CommandLineUtils.Models;
 using CoreSync.Core;
 using McMaster.Extensions.CommandLineUtils;
 using System;
@@ -85,17 +86,66 @@ namespace CoreSync.CommandLineUtils
         {
             WriteAssemblyVersions();
 
-            foreach (var reference in new string[] { "CommandLineUtils", "Core", "CryptLib" })
+            foreach (var group in GetReferenceGroups())
             {
-                var name = string.Format("CoreSync.{0}.dll", reference);
-                var fullName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, name);
-
-                if (Assembly.LoadFile(fullName) is Assembly assembly)
+                foreach (var reference in group.Names)
                 {
-                    WriteAssemblyVersions(assembly);
+                    var name = PrepareReferenceName(reference, group.Prefix);
+                    var fullName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, name);
+
+                    if (Assembly.LoadFile(fullName) is Assembly assembly)
+                    {
+                        WriteAssemblyVersions(assembly);
+                    }
                 }
             }
         }
+
+        /// <summary>
+        /// Creates instance of <see cref="List{ReferenceGroup}"/> with reference entries.
+        /// </summary>
+        /// <returns>
+        /// Returns instance of <see cref="List{ReferenceGroup}"/>.
+        /// </returns>
+        private List<ReferenceGroup> GetReferenceGroups()
+        {
+            return new List<ReferenceGroup>()
+            {
+                new ReferenceGroup()
+                {
+                    Names = new string[] 
+                    { 
+                        "CommandLineUtils",
+                        "Core",
+                        "CryptLib" 
+                    },
+                    Prefix = "CoreSync."
+                },
+                new ReferenceGroup()
+                {
+                    Names = new string[]
+                    { 
+                        "McMaster.Extensions.CommandLineUtils",
+                        "System.Security.Cryptography.ProtectedData"
+                    }
+                }
+            };
+        }
+
+        /// <summary>
+        /// Prepares <see cref="string"/> values with reference name.
+        /// </summary>
+        /// <param name="names">
+        /// Contains <see cref="string"/> with reference name.
+        /// </param>
+        /// <param name="prefix">
+        /// Contains optional <see cref="string"/> value with prefix.
+        /// </param>
+        /// <returns>
+        /// Returns prepared <see cref="string"/>.
+        /// </returns>
+        private string PrepareReferenceName(string name, string prefix = "") =>
+            string.Format("{0}{1}.dll", prefix, name);
 
         /// <summary>
         /// Gets custom <see cref="Attribute"/> of <see cref="Assembly"/>.
@@ -105,8 +155,17 @@ namespace CoreSync.CommandLineUtils
         /// Contains instance of <see cref="Assembly"/>.
         /// </param>
         /// <returns></returns>
-        private T GetCustomAttribute<T>(Assembly assembly) where T : Attribute =>
-            assembly.GetCustomAttribute<T>();
+        private T GetCustomAttribute<T>(Assembly assembly) where T : Attribute
+        {
+            try
+            {
+                return assembly.GetCustomAttribute<T>();
+            }
+            catch
+            {
+                return default;
+            }
+        }
 
         /// <summary>
         /// Gets <see cref="string"/> with informational version of <see cref="Assembly"/>.
@@ -129,9 +188,17 @@ namespace CoreSync.CommandLineUtils
         /// <returns>
         /// Returns <see cref="string"/> with framework name.
         /// </returns>
-        private string GetFrameworkName(Assembly assembly) =>
-            GetCustomAttribute<TargetFrameworkAttribute>(assembly).FrameworkName;
+        private string GetFrameworkName(Assembly assembly)
+        {
+            var attribute = GetCustomAttribute<TargetFrameworkAttribute>(assembly);
 
+            if (attribute != null)
+            {
+                return attribute.FrameworkName;
+            }
+
+            return null;
+        }
 
         /// <summary>
         /// Writes <see cref="Console"/> line of <see cref="Assembly"/> versions.
@@ -147,10 +214,15 @@ namespace CoreSync.CommandLineUtils
             }
 
             var name = assembly.ManifestModule.Name;
-            var version = GetVersion(assembly);
+            var version = GetVersion(assembly).Split(new char[] { ' ', '+' })[0];
             var frameworkDisplayName = GetFrameworkName(assembly);
 
-            Console.WriteLine("{0}: v{1} ({2})", name, version, frameworkDisplayName);
+            if (frameworkDisplayName != null)
+            {
+                frameworkDisplayName = string.Format(" ({0})", frameworkDisplayName);
+            }
+
+            Console.WriteLine("{0}: v{1}{2}", name, version, frameworkDisplayName);
         }
 
         #endregion
