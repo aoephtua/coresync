@@ -158,6 +158,27 @@ namespace CoreSync.Core
         public static string GetFullBaseDirectory() => Path.Combine(WorkingDirectoryPath, BaseDirectoryName);
 
         /// <summary>
+        /// Gets <see cref="string"/> with initialized full base directory path of <see cref="CoreSyncProcessor"/>.
+        /// </summary>
+        /// <returns>
+        /// Returns <see cref="string"/> value with directory path.
+        /// </returns>
+        public static string GetInitializedFullBaseDirectory()
+        {
+            var directory = GetFullBaseDirectory();
+
+            return Directory.Exists(directory) ? directory : null;
+        }
+
+        /// <summary>
+        /// Gets whether working directory is initialized by <see cref="CoreSyncProcessor"/>.
+        /// </summary>
+        /// <returns>
+        /// Returns <see cref="bool"/> value with initialization state.
+        /// </returns>
+        public static bool IsInitialized() => GetInitializedFullBaseDirectory() != null;
+
+        /// <summary>
         /// Gets <see cref="string"/> value with full name of <see cref="CoreSyncProcessor"/>.
         /// </summary>
         /// <param name="filename">
@@ -264,23 +285,27 @@ namespace CoreSync.Core
         /// <summary>
         /// Executes functionalities related to command for detaching of <see cref="CoreSyncProcessor"/>.
         /// </summary>
-        /// <param name="directoryPath">
-        /// Contains <see cref="string"/> value with optional directory path.
-        /// </param>
-        public static void Detach(string directoryPath = null)
+        /// <returns>
+        /// Returns <see cref="bool"/> value with detaching state.
+        /// </returns>
+        public static bool Detach()
         {
-            directoryPath = directoryPath ?? GetFullBaseDirectory();
+            var directoryPath = GetInitializedFullBaseDirectory();
 
-            if (Directory.Exists(directoryPath))
+            if (directoryPath != null)
             {
                 Directory.Delete(directoryPath, true);
 
                 Log("Detaching completed successfully.", writeLogEntry: false);
+
+                return true;
             }
             else
             {
                 Error(string.Format("Directory \"{0}\" does not exists.", directoryPath), writeLogEntry: false);
             }
+
+            return false;
         }
 
         /// <summary>
@@ -296,16 +321,9 @@ namespace CoreSync.Core
         {
             if (!string.IsNullOrEmpty(passphrase))
             {
-                var directoryPath = GetFullBaseDirectory();
-
-                if (Directory.Exists(directoryPath))
+                if (Detach())
                 {
-                    Detach(directoryPath);
                     Initialize(passphrase, encryptedDirectory);
-                }
-                else
-                {
-                    Error(string.Format("Directory \"{0}\" does not exists.", directoryPath), writeLogEntry: false);
                 }
             }
         }

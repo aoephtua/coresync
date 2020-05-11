@@ -5,6 +5,7 @@
 
 using CoreSync.Core;
 using McMaster.Extensions.CommandLineUtils;
+using System;
 
 #endregion
 
@@ -29,9 +30,18 @@ namespace CoreSync.CommandLineUtils.Commands
         /// </summary>
         protected override void Execute()
         {
-            if (GetPassphrase(out string passphrase))
+            if (!CoreSyncProcessor.IsInitialized())
             {
-                CoreSyncProcessor.Initialize(passphrase, EncryptedDirectory);
+                if (GetPassphrase(out string passphrase))
+                {
+                    CoreSyncProcessor.Initialize(passphrase, EncryptedDirectory);
+                }
+            }
+            else
+            {
+                Console.WriteLine("Error: Working directory already initialized.");
+
+                CommandLineApplication.Execute<ResetCommand>();
             }
         }
 

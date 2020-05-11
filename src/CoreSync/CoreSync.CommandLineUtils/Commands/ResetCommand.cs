@@ -22,7 +22,7 @@ namespace CoreSync.CommandLineUtils.Commands
         {
             if (Prompt.GetYesNo("Do you want to reset synchronization directory? If no external directory is set, encrypted data will be deleted. Use 'config' command to change values.", true))
             {
-                if (ConfigurationCommand.GetPassphrase(out string passphrase))
+                if (GetPassphrase(out string passphrase))
                 {
                     CoreSyncProcessor.Reset(passphrase, EncryptedDirectory);
                 }
