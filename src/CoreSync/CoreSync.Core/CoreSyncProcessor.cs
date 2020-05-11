@@ -97,10 +97,8 @@ namespace CoreSync.Core
 
                     Directory.CreateDirectory(new FileInfo(logFileName).DirectoryName);
 
-                    using (var logWriter = File.Exists(logFileName) ? File.AppendText(logFileName) : File.CreateText(logFileName))
-                    {
-                        logWriter.WriteLine(logEntry.ToString());
-                    }
+                    using var logWriter = File.Exists(logFileName) ? File.AppendText(logFileName) : File.CreateText(logFileName);
+                    logWriter.WriteLine(logEntry.ToString());
                 }
 
                 LogNotification(logEntry);
@@ -158,25 +156,26 @@ namespace CoreSync.Core
         public static string GetFullBaseDirectory() => Path.Combine(WorkingDirectoryPath, BaseDirectoryName);
 
         /// <summary>
-        /// Gets <see cref="string"/> with initialized full base directory path of <see cref="CoreSyncProcessor"/>.
+        /// Gets whether working directory is initialized by <see cref="CoreSyncProcessor"/>.
         /// </summary>
+        /// <param name="directoryPath">
+        /// Contains <see cref="string"/> with optional directory path.
+        /// </param>
         /// <returns>
-        /// Returns <see cref="string"/> value with directory path.
+        /// Returns <see cref="bool"/> value with initialization state.
         /// </returns>
-        public static string GetInitializedFullBaseDirectory()
-        {
-            var directory = GetFullBaseDirectory();
-
-            return Directory.Exists(directory) ? directory : null;
-        }
+        public static bool IsInitialized(string directoryPath = null) => Directory.Exists(directoryPath ?? GetFullBaseDirectory());
 
         /// <summary>
         /// Gets whether working directory is initialized by <see cref="CoreSyncProcessor"/>.
         /// </summary>
+        /// <param name="directoryPath">
+        /// Contains <see cref="string"/> with directory path as output parameter.
+        /// </param>
         /// <returns>
         /// Returns <see cref="bool"/> value with initialization state.
         /// </returns>
-        public static bool IsInitialized() => GetInitializedFullBaseDirectory() != null;
+        public static bool IsInitialized(out string directoryPath) => IsInitialized(directoryPath = GetFullBaseDirectory());
 
         /// <summary>
         /// Gets <see cref="string"/> value with full name of <see cref="CoreSyncProcessor"/>.
@@ -290,9 +289,7 @@ namespace CoreSync.Core
         /// </returns>
         public static bool Detach()
         {
-            var directoryPath = GetInitializedFullBaseDirectory();
-
-            if (directoryPath != null)
+            if (IsInitialized(out string directoryPath))
             {
                 Directory.Delete(directoryPath, true);
 
