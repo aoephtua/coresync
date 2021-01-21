@@ -61,9 +61,9 @@ Commands:
 Use "coresync [command] --help" for more information about a command.
 ```
 
-## Architecture
+## Processing
 
-<p align="center"><img src="resources/img/architecture.png" alt="coresync architecture"></p>
+<p align="center"><img src="resources/img/processing.png" alt="coresync processing"></p>
 
 ### Vault
 
