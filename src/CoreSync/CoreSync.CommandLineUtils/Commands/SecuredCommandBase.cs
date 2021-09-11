@@ -34,7 +34,7 @@ namespace CoreSync.CommandLineUtils.Commands
         {
             if (!CoreSyncConfiguration.FileExists)
             {
-                if (Prompt.GetYesNo("Error: Configuration file does not exists. Do you want to initialize synchronization directory?", true))
+                if (Prompt.GetYesNo("Configuration file does not exists. Do you want to initialize synchronization directory?", true))
                 {
                     CommandLineApplication.Execute<InitCommand>();
                 }
