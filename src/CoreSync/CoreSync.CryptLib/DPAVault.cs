@@ -3,7 +3,7 @@
 
 #region Using Directives
 
-using System;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -24,22 +24,24 @@ namespace CoreSync.CryptLib
         /// <param name="salt">
         /// Contains optional <see cref="byte[]"/> with initialization vector.
         /// </param>
-        /// <param name="scope">
-        /// Contains value of <see cref="DataProtectionScope"/>.
-        /// </param>
         /// <returns>
         /// Returns <see cref="byte[]"/> with protected value.
         /// </returns>
-        public static byte[] Protect(string value, byte[] salt = null, DataProtectionScope scope = DataProtectionScope.CurrentUser)
+        public static byte[] Protect(string value, byte[] salt = null)
         {
-            if (string.IsNullOrEmpty(value))
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                return null;
+                if (string.IsNullOrEmpty(value))
+                {
+                    return null;
+                }
+
+                byte[] plainText = Encoding.UTF8.GetBytes(value);
+
+                return ProtectedData.Protect(plainText, salt, DataProtectionScope.CurrentUser);
             }
 
-            byte[] plainText = Encoding.UTF8.GetBytes(value);
-
-            return ProtectedData.Protect(plainText, salt, scope);
+            return null;
         }
 
         /// <summary>
@@ -51,17 +53,19 @@ namespace CoreSync.CryptLib
         /// <param name="salt">
         /// Contains optional <see cref="byte[]"/> with initialization vector.
         /// </param>
-        /// <param name="scope">
-        /// Contains value of <see cref="DataProtectionScope"/>.
-        /// </param>
         /// <returns>
         /// Returns <see cref="string"/> with unprotected value.
         /// </returns>
-        public static string Unprotect(byte[] value, byte[] salt = null, DataProtectionScope scope = DataProtectionScope.CurrentUser)
+        public static string Unprotect(byte[] value, byte[] salt = null)
         {
-            byte[] plainText = ProtectedData.Unprotect(value, salt, scope);
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                byte[] plainText = ProtectedData.Unprotect(value, salt, DataProtectionScope.CurrentUser);
 
-            return Encoding.UTF8.GetString(plainText);
+                return Encoding.UTF8.GetString(plainText);
+            }
+
+            return null;
         }
 
         #endregion

@@ -87,7 +87,7 @@ namespace CoreSync.Core.Model
         {
             get
             {
-                singletonInstance = singletonInstance ?? Deserialize() ?? new CoreSyncConfiguration();
+                singletonInstance ??= Deserialize() ?? new CoreSyncConfiguration();
 
                 return singletonInstance;
             }
