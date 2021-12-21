@@ -21,11 +21,11 @@ CoreSync is a lightweight, multi-platform and file system based synchronization 
 
 ### Security
 
-- Symmetric `Advanced Encryption Standard (AES/Rijndael) 256-bit` encryption
+- Symmetric `Advanced Encryption Standard (AES) 256-bit` encryption
 - Master passphrase protection (Client-side)
   - `DPAPI` protects sensitive master passphrase on Windows
   - On `Unix` based systems the key is stored encrypted in file system outside of the sync folder
-- Randomness collected by `RNGCryptoServiceProvider`
+- Randomness collected by `RandomNumberGenerator`
 
 ## Installation
 

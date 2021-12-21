@@ -343,7 +343,7 @@ namespace CoreSync.Core.Model
 
                 CoreSyncProcessor.CreateApplicationDataFolder();
 
-                File.WriteAllBytes(IdentifierFileName, new RijndaelManagedCoreCryptor().Encrypt(Passphrase, protectedPassphrase, entropy));
+                File.WriteAllBytes(IdentifierFileName, new AesCoreCryptor().Encrypt(Passphrase, protectedPassphrase, entropy));
             }
         }
 
@@ -361,7 +361,7 @@ namespace CoreSync.Core.Model
             }
             else
             {
-                Passphrase = new RijndaelManagedCoreCryptor().Decrypt(File.ReadAllBytes(IdentifierFileName), protectedPassphrase, entropy);
+                Passphrase = new AesCoreCryptor().Decrypt(File.ReadAllBytes(IdentifierFileName), protectedPassphrase, entropy);
             }
         }
 

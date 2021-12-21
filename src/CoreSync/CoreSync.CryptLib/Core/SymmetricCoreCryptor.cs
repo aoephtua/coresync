@@ -43,7 +43,7 @@ namespace CoreSync.CryptLib.Core
         /// <summary>
         /// Contains buffer length of file transmitting of <see cref="SymmetricCoreCryptor"/>.
         /// </summary>
-        private static byte[] buffer = new byte[1024 * 1024];
+        private static readonly byte[] buffer = new byte[1024 * 1024];
 
         /// <summary>
         /// Contains flag for canceled status of <see cref="SymmetricCoreCryptor"/>.
@@ -98,19 +98,15 @@ namespace CoreSync.CryptLib.Core
         /// </returns>
         public virtual byte[] Encrypt(string data, string passphrase, byte[] salt, Encoding encoding = null)
         {
-            encoding = encoding ?? Encoding.UTF8;
+            encoding ??= Encoding.UTF8;
 
             try
             {
-                using (SymmetricAlgorithm SACrypto = CreateSymmetricAlgorithm(passphrase, salt))
-                {
-                    using (ICryptoTransform encryptor = SACrypto.CreateEncryptor(SACrypto.Key, SACrypto.IV))
-                    {
-                        byte[] plainBytes = encoding.GetBytes(data);
+                using SymmetricAlgorithm SACrypto = CreateSymmetricAlgorithm(passphrase, salt);
+                using ICryptoTransform encryptor = SACrypto.CreateEncryptor(SACrypto.Key, SACrypto.IV);
+                byte[] plainBytes = encoding.GetBytes(data);
 
-                        return encryptor.TransformFinalBlock(plainBytes, 0, plainBytes.Length);
-                    }
-                }
+                return encryptor.TransformFinalBlock(plainBytes, 0, plainBytes.Length);
             }
             catch (Exception e)
             {
@@ -139,17 +135,13 @@ namespace CoreSync.CryptLib.Core
         {
             try
             {
-                using (SymmetricAlgorithm SACrypto = CreateSymmetricAlgorithm(passphrase, salt))
-                {
-                    using (ICryptoTransform encryptor = SACrypto.CreateEncryptor(SACrypto.Key, SACrypto.IV))
-                    {
-                        CryptoStream cs = new CryptoStream(target, encryptor, CryptoStreamMode.Write);
+                using SymmetricAlgorithm SACrypto = CreateSymmetricAlgorithm(passphrase, salt);
+                using ICryptoTransform encryptor = SACrypto.CreateEncryptor(SACrypto.Key, SACrypto.IV);
+                CryptoStream cs = new CryptoStream(target, encryptor, CryptoStreamMode.Write);
 
-                        TransmitStreamData(source, cs);
+                TransmitStreamData(source, cs);
 
-                        cs.FlushFinalBlock();
-                    }
-                }
+                cs.FlushFinalBlock();
             }
             catch (Exception e)
             {
@@ -181,19 +173,15 @@ namespace CoreSync.CryptLib.Core
         /// </returns>
         public virtual string Decrypt(byte[] data, string passphrase, byte[] salt, Encoding encoding = null)
         {
-            encoding = encoding ?? Encoding.UTF8;
+            encoding ??= Encoding.UTF8;
 
             try
             {
-                using (SymmetricAlgorithm SACrypto = CreateSymmetricAlgorithm(passphrase, salt))
-                {
-                    using (ICryptoTransform decryptor = SACrypto.CreateDecryptor(SACrypto.Key, SACrypto.IV))
-                    {
-                        byte[] plainBytes = decryptor.TransformFinalBlock(data, 0, data.Length);
+                using SymmetricAlgorithm SACrypto = CreateSymmetricAlgorithm(passphrase, salt);
+                using ICryptoTransform decryptor = SACrypto.CreateDecryptor(SACrypto.Key, SACrypto.IV);
+                byte[] plainBytes = decryptor.TransformFinalBlock(data, 0, data.Length);
 
-                        return encoding.GetString(plainBytes);
-                    }
-                }
+                return encoding.GetString(plainBytes);
             }
             catch (Exception e)
             {
@@ -222,15 +210,11 @@ namespace CoreSync.CryptLib.Core
         {
             try
             {
-                using (SymmetricAlgorithm SACrypto = CreateSymmetricAlgorithm(passphrase, salt))
-                {
-                    using (ICryptoTransform decryptor = SACrypto.CreateDecryptor(SACrypto.Key, SACrypto.IV))
-                    {
-                        CryptoStream cs = new CryptoStream(source, decryptor, CryptoStreamMode.Read);
+                using SymmetricAlgorithm SACrypto = CreateSymmetricAlgorithm(passphrase, salt);
+                using ICryptoTransform decryptor = SACrypto.CreateDecryptor(SACrypto.Key, SACrypto.IV);
+                CryptoStream cs = new(source, decryptor, CryptoStreamMode.Read);
 
-                        TransmitStreamData(cs, target);
-                    }
-                }
+                TransmitStreamData(cs, target);
             }
             catch (Exception e)
             {
@@ -251,14 +235,12 @@ namespace CoreSync.CryptLib.Core
         /// </returns>
         public static string GeneratePassphrase(int length = 32)
         {
-            using (var rng = new RNGCryptoServiceProvider())
-            {
-                byte[] tokenBuffer = new byte[length];
+            using var rng = RandomNumberGenerator.Create();
+            byte[] tokenBuffer = new byte[length];
 
-                rng.GetBytes(tokenBuffer);
+            rng.GetBytes(tokenBuffer);
 
-                return Convert.ToBase64String(tokenBuffer);
-            }
+            return Convert.ToBase64String(tokenBuffer);
         }
 
         /// <summary>
@@ -274,7 +256,7 @@ namespace CoreSync.CryptLib.Core
         {
             var salt = new byte[maximumSaltLength];
 
-            using (var rng = new RNGCryptoServiceProvider())
+            using (var rng = RandomNumberGenerator.Create())
             {
                 rng.GetBytes(salt);
             }
@@ -298,7 +280,7 @@ namespace CoreSync.CryptLib.Core
         private void TransmitStreamData(Stream input, Stream ouput)
         {
             long totalBytes = 0;
-            int currentBlockSize = 0;
+            int currentBlockSize;
 
             while ((currentBlockSize = input.Read(buffer, 0, buffer.Length)) > 0)
             {

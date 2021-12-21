@@ -89,7 +89,7 @@ namespace CoreSync.Core.IO
 
                         IOProcessor.Write(salt, encryptedStream);
 
-                        new RijndaelManagedCoreCryptor().Encrypt(stream, encryptedStream, passphrase, salt);
+                        new AesCoreCryptor().Encrypt(stream, encryptedStream, passphrase, salt);
                     }
                 }
 
@@ -165,7 +165,7 @@ namespace CoreSync.Core.IO
                             IOProcessor.ResetStream(encryptedStreamWithoutSalt);
 
                             var decryptedStream = new MemoryStream();
-                            new RijndaelManagedCoreCryptor().Decrypt(encryptedStreamWithoutSalt, decryptedStream, passphrase, salt);
+                            new AesCoreCryptor().Decrypt(encryptedStreamWithoutSalt, decryptedStream, passphrase, salt);
 
                             decryptedStream.Seek(0, SeekOrigin.Begin);
 
