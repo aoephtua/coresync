@@ -170,10 +170,9 @@ namespace CoreSync.Core.Model
 
             try
             {
-                using (var fs = File.Open(filename, FileMode.Open, FileAccess.Read))
-                {
-                    checksum = HashVault.GetHexStringFromBytes(HashVault.Compute(fs, FileHashingAlgorithm)).ToUpperInvariant();
-                }
+                using var fs = File.Open(filename, FileMode.Open, FileAccess.Read);
+
+                checksum = HashVault.GetHexStringFromBytes(HashVault.Compute(fs, FileHashingAlgorithm)).ToUpperInvariant();
             }
             catch (Exception e)
             {

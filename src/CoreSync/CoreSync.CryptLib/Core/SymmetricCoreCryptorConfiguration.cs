@@ -38,6 +38,11 @@ namespace CoreSync.CryptLib.Core
         /// </summary>
         public int Iterations { get; set; }
 
+        /// <summary>
+        /// Gets or sets <see cref="HashAlgorithmName"/> of <see cref="SymmetricCoreCryptorConfiguration"/>.
+        /// </summary>
+        public HashAlgorithmName HashName { get; set; }
+
         #endregion
     }
 }

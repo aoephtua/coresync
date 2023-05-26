@@ -22,7 +22,8 @@ namespace CoreSync.CryptLib.Core
             KeySize = 256,
             CipherMode = CipherMode.CBC,
             PaddingMode = PaddingMode.PKCS7,
-            Iterations = 2500
+            Iterations = 2500,
+            HashName = HashAlgorithmName.SHA256
         }) { }
 
         /// <summary>
@@ -51,7 +52,7 @@ namespace CoreSync.CryptLib.Core
         /// </returns>
         protected override SymmetricAlgorithm CreateSymmetricAlgorithm(string key, byte[] salt)
         {
-            var k = new Rfc2898DeriveBytes(key, salt, Configuration.Iterations);
+            var k = new Rfc2898DeriveBytes(key, salt, Configuration.Iterations, Configuration.HashName);
 
             var aes = Aes.Create();
 

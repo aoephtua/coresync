@@ -107,10 +107,9 @@ namespace CoreSync.CryptLib
         /// </returns>
         public static byte[] Compute(string input, byte[] salt, int cb = 20)
         {
-            using (var deriveBytes = new Rfc2898DeriveBytes(input, salt))
-            {
-                return deriveBytes.GetBytes(cb);
-            }
+            using var deriveBytes = new Rfc2898DeriveBytes(input, salt, 2500, HashAlgorithmName.SHA256);
+
+            return deriveBytes.GetBytes(cb);
         }
 
         /// <summary>

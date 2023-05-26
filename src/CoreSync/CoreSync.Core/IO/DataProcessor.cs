@@ -81,16 +81,15 @@ namespace CoreSync.Core.IO
             {
                 Directory.CreateDirectory(new FileInfo(fileName).DirectoryName);
 
-                using (var encryptedStream = new FileStream(fileName, FileMode.Create))
+                using var encryptedStream = new FileStream(fileName, FileMode.Create);
+
+                if (stream != null && stream.Length > 0)
                 {
-                    if (stream != null && stream.Length > 0)
-                    {
-                        var salt = SymmetricCoreCryptor.GetSalt(saltLength);
+                    var salt = SymmetricCoreCryptor.GetSalt(saltLength);
 
-                        IOProcessor.Write(salt, encryptedStream);
+                    IOProcessor.Write(salt, encryptedStream);
 
-                        new AesCoreCryptor().Encrypt(stream, encryptedStream, passphrase, salt);
-                    }
+                    new AesCoreCryptor().Encrypt(stream, encryptedStream, passphrase, salt);
                 }
 
                 return true;
@@ -124,10 +123,9 @@ namespace CoreSync.Core.IO
             {
                 try
                 {
-                    using (var fileStream = new FileStream(sourceFileName, FileMode.Open, FileAccess.Read))
-                    {
-                        return Encrypt(fileStream, fileName, passphrase);
-                    }
+                    using var fileStream = new FileStream(sourceFileName, FileMode.Open, FileAccess.Read);
+
+                    return Encrypt(fileStream, fileName, passphrase);
                 }
                 catch (Exception e)
                 {
@@ -156,21 +154,20 @@ namespace CoreSync.Core.IO
             {
                 if (File.Exists(fileName))
                 {
-                    using (var encryptedStream = File.Open(fileName, FileMode.Open))
+                    using var encryptedStream = File.Open(fileName, FileMode.Open);
+
+                    if (IOProcessor.Read(encryptedStream, saltLength) is byte[] salt && salt.Length > 0)
                     {
-                        if (IOProcessor.Read(encryptedStream, saltLength) is byte[] salt && salt.Length > 0)
-                        {
-                            var encryptedStreamWithoutSalt = new MemoryStream();
-                            encryptedStream.CopyTo(encryptedStreamWithoutSalt);
-                            IOProcessor.ResetStream(encryptedStreamWithoutSalt);
+                        var encryptedStreamWithoutSalt = new MemoryStream();
+                        encryptedStream.CopyTo(encryptedStreamWithoutSalt);
+                        IOProcessor.ResetStream(encryptedStreamWithoutSalt);
 
-                            var decryptedStream = new MemoryStream();
-                            new AesCoreCryptor().Decrypt(encryptedStreamWithoutSalt, decryptedStream, passphrase, salt);
+                        var decryptedStream = new MemoryStream();
+                        new AesCoreCryptor().Decrypt(encryptedStreamWithoutSalt, decryptedStream, passphrase, salt);
 
-                            decryptedStream.Seek(0, SeekOrigin.Begin);
+                        decryptedStream.Seek(0, SeekOrigin.Begin);
 
-                            return decryptedStream;
-                        }
+                        return decryptedStream;
                     }
                 }
             }
@@ -200,18 +197,17 @@ namespace CoreSync.Core.IO
             {
                 Directory.CreateDirectory(new FileInfo(targetFileName).DirectoryName);
 
-                using (var fileStream = File.Create(targetFileName))
+                using var fileStream = File.Create(targetFileName);
+
+                var dataStream = Decrypt(fileName, passphrase);
+
+                if (dataStream != null)
                 {
-                    var dataStream = Decrypt(fileName, passphrase);
+                    dataStream.CopyTo(fileStream);
 
-                    if (dataStream != null)
-                    {
-                        dataStream.CopyTo(fileStream);
+                    dataStream.Dispose();
 
-                        dataStream.Dispose();
-
-                        return true;
-                    }
+                    return true;
                 }
             }
             catch (Exception e)

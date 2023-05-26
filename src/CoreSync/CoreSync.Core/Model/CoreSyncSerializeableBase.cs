@@ -37,12 +37,9 @@ namespace CoreSync.Core.Model
         {
             var stream = new MemoryStream();
 
-            JsonSerializer.SingletonInstance.Serialize<T>((T)(object)this, stream);
+            JsonSerializer.SingletonInstance.Serialize((T)(object)this, stream);
 
-            if (stream != null)
-            {
-                stream.Seek(0, SeekOrigin.Begin);
-            }
+            stream?.Seek(0, SeekOrigin.Begin);
 
             return stream;
         }
@@ -57,7 +54,7 @@ namespace CoreSync.Core.Model
         {
             if (!string.IsNullOrEmpty(TargetFileName))
             {
-                JsonSerializer.SingletonInstance.Serialize<T>((T)(object)this, CoreSyncProcessor.GetFullName(TargetFileName), indent);
+                JsonSerializer.SingletonInstance.Serialize((T)(object)this, CoreSyncProcessor.GetFullName(TargetFileName), indent);
             }
         }
 

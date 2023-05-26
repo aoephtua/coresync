@@ -27,7 +27,7 @@ namespace CoreSync.CryptLib
         {
             try
             {
-                BinaryWriter binaryWriter = new BinaryWriter(target);
+                BinaryWriter binaryWriter = new(target);
 
                 binaryWriter.Write(data);
             }
@@ -66,7 +66,7 @@ namespace CoreSync.CryptLib
         {
             try
             {
-                BinaryReader binaryReader = new BinaryReader(source);
+                BinaryReader binaryReader = new(source);
 
                 return binaryReader.ReadBytes(length);
             }
@@ -113,7 +113,7 @@ namespace CoreSync.CryptLib
         /// <param name="encoding">
         /// Contains instance of <see cref="Encoding"/>.
         /// </param>
-        private static void SetEncoding(ref Encoding encoding) => encoding = encoding ?? Encoding.UTF8;
+        private static void SetEncoding(ref Encoding encoding) => encoding ??= Encoding.UTF8;
 
         #endregion
     }

@@ -37,7 +37,7 @@ namespace CoreSync.CommandLineUtils.Attributes
         /// </returns>
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
-            if (!(value is null) && !Path.IsPathRooted(value.ToString()))
+            if (value is not null && !Path.IsPathRooted(value.ToString()))
             {
                 return new ValidationResult(FormatErrorMessage(validationContext.DisplayName));
             }

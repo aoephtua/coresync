@@ -144,7 +144,7 @@ namespace CoreSync.CommandLineUtils
         /// <returns>
         /// Returns prepared <see cref="string"/>.
         /// </returns>
-        private string PrepareReferenceName(string name, string prefix = "") =>
+        private static string PrepareReferenceName(string name, string prefix = "") =>
             string.Format("{0}{1}.dll", prefix, name);
 
         /// <summary>
@@ -155,7 +155,7 @@ namespace CoreSync.CommandLineUtils
         /// Contains instance of <see cref="Assembly"/>.
         /// </param>
         /// <returns></returns>
-        private T GetCustomAttribute<T>(Assembly assembly) where T : Attribute
+        private static T GetCustomAttribute<T>(Assembly assembly) where T : Attribute
         {
             try
             {
@@ -176,7 +176,7 @@ namespace CoreSync.CommandLineUtils
         /// <returns>
         /// Returns <see cref="string"/> with current application version.
         /// </returns>
-        private string GetVersion(Assembly assembly) =>
+        private static string GetVersion(Assembly assembly) =>
             GetCustomAttribute<AssemblyInformationalVersionAttribute>(assembly).InformationalVersion;
 
         /// <summary>
@@ -188,7 +188,7 @@ namespace CoreSync.CommandLineUtils
         /// <returns>
         /// Returns <see cref="string"/> with framework name.
         /// </returns>
-        private string GetFrameworkName(Assembly assembly)
+        private static string GetFrameworkName(Assembly assembly)
         {
             var attribute = GetCustomAttribute<TargetFrameworkAttribute>(assembly);
 
@@ -206,7 +206,7 @@ namespace CoreSync.CommandLineUtils
         /// <param name="assembly">
         /// Contains instance of <see cref="Assembly"/>. Default value is the process executable in the default application domain.
         /// </param>
-        private void WriteAssemblyVersions(Assembly assembly = null)
+        private static void WriteAssemblyVersions(Assembly assembly = null)
         {
             if (assembly == null)
             {

@@ -37,7 +37,7 @@ namespace CoreSync.Core.IO.Serialization
         {
             get
             {
-                singletonInstance = singletonInstance ?? new JsonSerializer();
+                singletonInstance ??= new JsonSerializer();
 
                 return singletonInstance;
             }
@@ -95,10 +95,9 @@ namespace CoreSync.Core.IO.Serialization
         {
             try
             {
-                using (var stream = File.Create(filename))
-                {
-                    Serialize<T>(obj, stream, indent);
-                }
+                using var stream = File.Create(filename);
+
+                Serialize<T>(obj, stream, indent);
             }
             catch (Exception e)
             {
@@ -130,7 +129,7 @@ namespace CoreSync.Core.IO.Serialization
             {
                 Error = e;
 
-                return default(T);
+                return default;
             }
         }
 
@@ -176,7 +175,7 @@ namespace CoreSync.Core.IO.Serialization
                 Error = e;
             }
 
-            T result = this.Deserialize<T>(stream);
+            T result = Deserialize<T>(stream);
 
             stream?.Dispose();
 
