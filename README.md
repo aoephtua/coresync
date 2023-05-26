@@ -77,7 +77,7 @@ Use "coresync [command] --help" for more information about a command.
 
 ## Requirements
 
-- Install the latest [.NET 6.0 Runtime](https://dotnet.microsoft.com/download/dotnet/6.0)
+- Install the latest [.NET 7.0 Runtime](https://dotnet.microsoft.com/download/dotnet/7.0)
 
 ## License
 
