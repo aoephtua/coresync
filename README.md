@@ -77,7 +77,7 @@ Use "coresync [command] --help" for more information about a command.
 
 ## Requirements
 
-- Install the latest [.NET 8.0 Runtime](https://dotnet.microsoft.com/download/dotnet/8.0)
+- Install the latest [.NET 9.0 Runtime](https://dotnet.microsoft.com/download/dotnet/9.0)
 
 ## License
 
