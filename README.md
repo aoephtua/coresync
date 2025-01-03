@@ -1,4 +1,9 @@
-<p align="center"><img src="resources/img/logo.png" alt="coresync logo"></p>
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="./resources/img/logo_dark.png">
+    <img alt="coresync logo" src="./resources/img/logo_light.png">
+  </picture>
+</p>
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
@@ -63,7 +68,7 @@ Use "coresync [command] --help" for more information about a command.
 
 ## Processing
 
-<p align="center"><img src="resources/img/processing.png" alt="coresync processing"></p>
+<p align="center"><img src="./resources/img/processing.png" alt="coresync processing"></p>
 
 ### Vault
 
