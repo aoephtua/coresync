@@ -68,7 +68,12 @@ Use "coresync [command] --help" for more information about a command.
 
 ## Processing
 
-<p align="center"><img src="./resources/img/processing.png" alt="coresync processing"></p>
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="./resources/img/processing_dark.png">
+    <img alt="coresync processing" src="./resources/img/processing_light.png">
+  </picture>
+</p>
 
 ### Vault
 
