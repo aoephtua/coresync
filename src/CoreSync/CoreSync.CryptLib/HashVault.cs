@@ -91,25 +91,32 @@ namespace CoreSync.CryptLib
         }
 
         /// <summary>
-        /// Computes <see cref="byte[]"/> value with secure checksum by <see cref="HashAlgorithm"/>.
+        /// Computes a secure checksum using PBKDF2 with a specified <see cref="HashAlgorithm"/>.
         /// </summary>
         /// <param name="input">
-        /// Contains <see cref="string"/> value with data for hashing process.
+        /// The input string to derive bytes from.
         /// </param>
         /// <param name="salt">
-        /// Contains <see cref="byte[]"/> with salt for hashing process.
+        /// The salt used for the PBKDF2 process.
         /// </param>
         /// <param name="cb">
-        /// Contains the number of pseudo-random key bytes to generate.
+        /// The number of pseudo-random key bytes to generate.
         /// </param>
         /// <returns>
-        /// Returns <see cref="byte[]"/> value with computed hash by <see cref="HashAlgorithm"/>.
+        /// Returns a <see cref="byte[]"/> containing the derived key.
         /// </returns>
         public static byte[] Compute(string input, byte[] salt, int cb = 20)
         {
-            using var deriveBytes = new Rfc2898DeriveBytes(input, salt, 2500, HashAlgorithmName.SHA256);
+            const int iterations = 600000;
 
-            return deriveBytes.GetBytes(cb);
+            return Rfc2898DeriveBytes.Pbkdf2
+            (
+                password: input,
+                salt: salt,
+                iterations: iterations,
+                hashAlgorithm: HashAlgorithmName.SHA256,
+                outputLength: cb
+            );
         }
 
         /// <summary>
