@@ -109,27 +109,27 @@ namespace CoreSync.CommandLineUtils
         /// </returns>
         private List<ReferenceGroup> GetReferenceGroups()
         {
-            return new List<ReferenceGroup>()
-            {
+            return
+            [
                 new ReferenceGroup()
                 {
-                    Names = new string[] 
-                    { 
+                    Names =
+                    [
                         "CommandLineUtils",
                         "Core",
                         "CryptLib" 
-                    },
+                    ],
                     Prefix = "CoreSync."
                 },
                 new ReferenceGroup()
                 {
-                    Names = new string[]
-                    { 
+                    Names =
+                    [
                         "McMaster.Extensions.CommandLineUtils",
                         "System.Security.Cryptography.ProtectedData"
-                    }
+                    ]
                 }
-            };
+            ];
         }
 
         /// <summary>
@@ -214,7 +214,7 @@ namespace CoreSync.CommandLineUtils
             }
 
             var name = assembly.ManifestModule.Name;
-            var version = GetVersion(assembly).Split(new char[] { ' ', '+' })[0];
+            var version = GetVersion(assembly).Split([' ', '+'])[0];
             var frameworkDisplayName = GetFrameworkName(assembly);
 
             if (frameworkDisplayName != null)
