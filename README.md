@@ -87,7 +87,7 @@ Use "coresync [command] --help" for more information about a command.
 
 ## Requirements
 
-- Install the latest [.NET 10.0 Runtime](https://dotnet.microsoft.com/download/dotnet/10.0)
+- Install the latest [.NET 11.0 Runtime](https://dotnet.microsoft.com/download/dotnet/11.0)
 
 ## License
 
